@@ -1,5 +1,7 @@
+import { lazy } from "react";
 import Form from "../../../form/formContext";
 import Register from "../../../register/registerContext";
+import { BASIC_FIELDS_EXAMPLE } from "./fields";
 
 function ExampleV1Basic() {
   return (
@@ -7,14 +9,11 @@ function ExampleV1Basic() {
       components={[
         {
           type: "text",
-          render: (props, methods) => <input type="text" placeholder="Enter text" />,
+          render: lazy(() => import("./components/text")),
         },
       ]}
     >
-      <Form>
-        <h1>Example V1 Basic</h1>
-        <p>This is a basic example of using the form context.</p>
-      </Form>
+      <Form fields={BASIC_FIELDS_EXAMPLE} />
     </Register>
   );
 }

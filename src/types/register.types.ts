@@ -1,5 +1,6 @@
-import type { JSX } from "react/jsx-dev-runtime";
-import type { BaseField, FieldMethods } from "./form.types";
+import type { ComponentType } from "react";
+import type { BaseField } from "./field.types";
+import type { FieldMethods } from "./form.types";
 
 export type RegisterField = BaseField & {
   value?: any;
@@ -8,7 +9,10 @@ export type RegisterField = BaseField & {
 
 export type RegisterComponent = {
   type: string; // e.g., "text", "select", etc.
-  render: (field: RegisterField, methods: FieldMethods) => JSX.Element;
+  render: ComponentType<{
+    field: RegisterField;
+    methods: FieldMethods;
+  }>;
 };
 
 export type RegisterContext = Partial<{

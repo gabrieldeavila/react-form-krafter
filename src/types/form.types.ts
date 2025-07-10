@@ -1,12 +1,8 @@
-export type FormContext = Partial<{}>;
+import type { Field } from "./field.types";
 
-export type BaseField = {
-  name: string;
-  label: string;
-  required?: boolean;
-  placeholder?: string;
-  disabled?: boolean;
-};
+export type FormContext = Partial<{
+  fields: Field[];
+}>;
 
 export type FieldMethods = {
   onChange: (e: React.ChangeEvent<any>) => void;
