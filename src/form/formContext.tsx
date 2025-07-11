@@ -1,15 +1,34 @@
-import { createContext, Suspense, useContext } from "react";
-import type { FormContext } from "../types";
+import { createContext, Suspense, useContext, useMemo, useState } from "react";
+import type { FieldsInfo, FormContext, FormUserProps } from "../types";
 import Field from "./field";
 
-const FormContext = createContext<FormContext>({});
+const FormContext = createContext<FormContext | null>(null);
 
-const Form = (props: FormContext) => {
+const Form = (props: FormUserProps) => {
+  const [fieldsState, setFieldsState] = useState<Record<string, any>>({});
+
+  const [fieldsInfo, setFieldsInfo] = useState<FieldsInfo>({
+    dirty: [],
+    focused: [],
+    touched: [],
+  });
+
+  const formValue = useMemo<FormContext>(
+    () => ({
+      ...props,
+      fieldsInfo,
+      setFieldsInfo,
+      fieldsState,
+      setFieldsState,
+    }),
+    []
+  );
+
   return (
-    <FormContext.Provider value={props}>
+    <FormContext.Provider value={formValue}>
       <Suspense fallback={<div>Loading...</div>}>
         {props.fields?.map((field, index) => {
-          return <Field key={index} {...field} />;
+          return <Field key={index} field={field} />;
         })}
       </Suspense>
     </FormContext.Provider>

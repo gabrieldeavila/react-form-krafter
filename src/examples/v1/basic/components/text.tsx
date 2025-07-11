@@ -1,30 +1,9 @@
-import type { FieldMethods, RegisterField } from "../../../../types";
+import { memo } from "react";
+import type { RegisterFieldRenderProps } from "../../../../types";
+import FieldBase from "./base";
 
-function FieldText({
-  methods,
-  field,
-}: {
-  field: RegisterField;
-  methods: FieldMethods;
-}) {
-  return (
-    <div>
-      <label htmlFor={field.name}>{field.label}</label>
-
-      <input
-        type="text"
-        placeholder={field.placeholder}
-        id={field.name}
-        name={field.name}
-        required={field.required}
-        disabled={field.disabled}
-        value={field.value}
-        {...methods}
-      />
-
-      {field.error && <span className="error">{field.error}</span>}
-    </div>
-  );
-}
+const FieldText = memo((props: RegisterFieldRenderProps) => {
+  return <FieldBase {...props} type="text" />;
+});
 
 export default FieldText;
