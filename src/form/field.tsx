@@ -13,6 +13,8 @@ function FieldComponent({ field }: { field: Field }) {
     setFieldsInfo,
     fieldsState,
     fieldsInfo,
+    updateFieldsState,
+    reset,
   } = useForm();
 
   const timerRef = useRef<number | null>(null);
@@ -20,34 +22,6 @@ function FieldComponent({ field }: { field: Field }) {
   const Component = useMemo(
     () => components?.find((c) => c.type === field.type)?.render,
     [components, field.type]
-  );
-
-  const updateFieldsState = useCallback(
-    (newState: Record<string, unknown>) => {
-      setFieldsState((prevState) => {
-        const updatedState = {
-          ...prevState,
-          ...newState,
-        };
-
-        setFieldsInfo((prevInfo) => ({
-          ...prevInfo,
-          previousState: {
-            ...prevInfo.previousState,
-            ...Object.entries(newState).reduce(
-              (acc, [key, value]) => ({
-                ...acc,
-                [key]: value,
-              }),
-              {}
-            ),
-          },
-        }));
-
-        return updatedState;
-      });
-    },
-    [setFieldsInfo, setFieldsState]
   );
 
   const handleBlur = useCallback(async () => {
@@ -62,6 +36,7 @@ function FieldComponent({ field }: { field: Field }) {
       updateFieldsState,
       previousState: fieldsInfo.previousState,
       currentState: fieldsState,
+      reset,
     });
 
     if (updateProps?.preventUpdate) {
@@ -88,6 +63,7 @@ function FieldComponent({ field }: { field: Field }) {
     fieldsState,
     onUpdate,
     setFieldsInfo,
+    reset,
     setFieldsState,
     updateFieldsState,
   ]);
@@ -110,6 +86,7 @@ function FieldComponent({ field }: { field: Field }) {
         fieldName: field.name,
         value,
         updateFieldsState,
+        reset,
         previousState: fieldsInfo.previousState,
         currentState: fieldsState,
       });
@@ -135,6 +112,7 @@ function FieldComponent({ field }: { field: Field }) {
       setFieldsState,
       settings?.updateDebounce,
       updateFieldsState,
+      reset,
     ]
   );
 

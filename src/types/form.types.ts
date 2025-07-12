@@ -4,23 +4,39 @@ export type OnUpdate = {
   preventUpdate?: boolean;
 };
 
+export type FormApi = {
+  reset: () => void;
+  updateFieldsState: (newState: Record<string, unknown>) => void;
+  setFieldsState: React.Dispatch<React.SetStateAction<Record<string, unknown>>>;
+  setFieldsInfo: React.Dispatch<React.SetStateAction<FieldsInfo>>;
+  fieldsState: Record<string, unknown>;
+  fieldsInfo: FieldsInfo;
+};
+
 export type FormUserProps = {
   fields: Field[];
   onUpdate?: (props: {
     fieldName: string;
     value: unknown;
-    updateFieldsState: (newState: Record<string, unknown>) => void;
+    updateFieldsState: FormApi["updateFieldsState"];
+    reset: () => void;
     previousState: Record<string, unknown>;
     currentState: Record<string, unknown>;
   }) => void | Promise<OnUpdate | void>;
   onChange?: (props: {
     fieldName: string;
     value: unknown;
-    updateFieldsState: (newState: Record<string, unknown>) => void;
+    reset: () => void;
+    updateFieldsState: FormApi["updateFieldsState"];
     previousState: Record<string, unknown>;
     currentState: Record<string, unknown>;
   }) => void | Promise<void>;
 };
+
+export type FormUserConfigProps = Partial<{
+  formApi: React.RefObject<FormApi | null>;
+  children: React.ReactNode | null | ((formApi: FormApi) => React.ReactNode);
+}>;
 
 export type FormContext = FormUserProps & {
   fieldsState: Record<string, unknown>;
@@ -28,6 +44,9 @@ export type FormContext = FormUserProps & {
 
   fieldsInfo: FieldsInfo;
   setFieldsInfo: React.Dispatch<React.SetStateAction<FieldsInfo>>;
+
+  reset: () => void;
+  updateFieldsState: FormApi["updateFieldsState"];
 };
 
 export type FieldMethods = {
@@ -40,4 +59,5 @@ export type FieldsInfo = {
   focused: string[];
   dirty: string[];
   previousState: Record<string, unknown>;
+  initialState: Record<string, unknown>;
 };

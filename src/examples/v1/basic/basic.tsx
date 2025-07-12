@@ -1,7 +1,7 @@
-import { lazy } from "react";
+import { lazy, useRef } from "react";
 import Form from "../../../form/formContext";
 import Register from "../../../register/registerContext";
-import type { RegisterComponent } from "../../../types";
+import type { FormApi, RegisterComponent } from "../../../types";
 import { BASIC_FIELDS_EXAMPLE } from "./fields";
 
 const COMPONENTS: RegisterComponent[] = [
@@ -16,6 +16,8 @@ const COMPONENTS: RegisterComponent[] = [
 ];
 
 function ExampleV1Basic() {
+  const formApi = useRef<FormApi>(null);
+
   return (
     <Register
       components={COMPONENTS}
@@ -24,6 +26,7 @@ function ExampleV1Basic() {
       }}
     >
       <Form
+        formApi={formApi}
         fields={BASIC_FIELDS_EXAMPLE}
         onUpdate={async ({ fieldName, value }) => {
           if (fieldName === "text" && (value as string).length > 3) {
@@ -35,7 +38,14 @@ function ExampleV1Basic() {
             updateFieldsState({ text: "..." }); // Example of updating state
           }
         }}
-      />
+      >
+        {(formValue) => (
+          <div>
+            <h1>Basic Form Example</h1>
+            <pre>{JSON.stringify(formValue.fieldsState, null, 2)}</pre>
+          </div>
+        )}
+      </Form>
     </Register>
   );
 }
