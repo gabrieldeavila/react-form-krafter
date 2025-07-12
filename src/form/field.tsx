@@ -14,7 +14,7 @@ function FieldComponent({ field }: { field: Field }) {
   );
 
   const handleChange = useCallback(
-    (value: any) => {
+    (value: unknown) => {
       setFieldsInfo((prevInfo) => ({
         ...prevInfo,
         dirty: prevInfo.dirty.includes(field.name)
@@ -27,7 +27,7 @@ function FieldComponent({ field }: { field: Field }) {
         [field.name]: value,
       }));
     },
-    [field.name, setFieldsState]
+    [field.name, setFieldsInfo, setFieldsState]
   );
 
   const handleBlur = useCallback(() => {}, []);
@@ -47,7 +47,7 @@ function FieldComponent({ field }: { field: Field }) {
     [fieldsInfo, field.name]
   );
 
-  const isPristine = useMemo(() => !isDirty, [isDirty, isTouched]);
+  const isPristine = useMemo(() => !isDirty, [isDirty]);
 
   const isFocused = useMemo(
     () => fieldsInfo.focused?.includes(field.name),
@@ -70,7 +70,7 @@ function FieldComponent({ field }: { field: Field }) {
       isPristine,
       error: null, // Error handling can be added later
     }),
-    [field, value, isTouched, isDirty, isFocused, isDefaultValue]
+    [field, value, isTouched, isDirty, isFocused, isDefaultValue, isPristine]
   );
 
   return (

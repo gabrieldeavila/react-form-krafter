@@ -1,7 +1,7 @@
 export type BaseField = {
   name: string;
   label: string;
-  initialValue?: any;
+  initialValue?: unknown;
   required?: boolean;
   placeholder?: string;
   disabled?: boolean;

@@ -3,7 +3,7 @@ import type { BaseField } from "./field.types";
 import type { FieldMethods } from "./form.types";
 
 export type RegisterField = BaseField & {
-  value: any;
+  value: unknown;
   error: string | null;
   isTouched: boolean;
   isDirty: boolean;

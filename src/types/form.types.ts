@@ -5,15 +5,15 @@ export type FormUserProps = {
 };
 
 export type FormContext = FormUserProps & {
-  fieldsState: Record<string, any>;
-  setFieldsState: React.Dispatch<React.SetStateAction<Record<string, any>>>;
+  fieldsState: Record<string, unknown>;
+  setFieldsState: React.Dispatch<React.SetStateAction<Record<string, unknown>>>;
 
   fieldsInfo: FieldsInfo;
   setFieldsInfo: React.Dispatch<React.SetStateAction<FieldsInfo>>;
 };
 
 export type FieldMethods = {
-  onChange: (value: any) => void;
+  onChange: (value: unknown) => void;
   onBlur: () => void;
 };
 

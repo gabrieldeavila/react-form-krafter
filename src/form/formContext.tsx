@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, Suspense, useContext, useMemo, useState } from "react";
 import type { FieldsInfo, FormContext, FormUserProps } from "../types";
 import Field from "./field";
@@ -5,7 +6,7 @@ import Field from "./field";
 const FormContext = createContext<FormContext | null>(null);
 
 const Form = (props: FormUserProps) => {
-  const [fieldsState, setFieldsState] = useState<Record<string, any>>({});
+  const [fieldsState, setFieldsState] = useState<Record<string, unknown>>({});
 
   const [fieldsInfo, setFieldsInfo] = useState<FieldsInfo>({
     dirty: [],
@@ -21,7 +22,7 @@ const Form = (props: FormUserProps) => {
       fieldsState,
       setFieldsState,
     }),
-    []
+    [fieldsInfo, fieldsState, props]
   );
 
   return (
