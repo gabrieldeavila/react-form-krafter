@@ -1,17 +1,96 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import { useRegister } from "../register/registerContext";
 import type { Field } from "../types/field.types";
 import { useForm } from "./formContext";
 import type { RegisterField } from "../types";
 
 function FieldComponent({ field }: { field: Field }) {
-  const { components } = useRegister();
-  const { setFieldsState, setFieldsInfo, fieldsState, fieldsInfo } = useForm();
+  const { components, settings } = useRegister();
+  const {
+    onUpdate,
+    onChange,
+    setFieldsState,
+    setFieldsInfo,
+    fieldsState,
+    fieldsInfo,
+  } = useForm();
+
+  const timerRef = useRef<number | null>(null);
 
   const Component = useMemo(
     () => components?.find((c) => c.type === field.type)?.render,
     [components, field.type]
   );
+
+  const updateFieldsState = useCallback(
+    (newState: Record<string, unknown>) => {
+      setFieldsState((prevState) => {
+        const updatedState = {
+          ...prevState,
+          ...newState,
+        };
+
+        setFieldsInfo((prevInfo) => ({
+          ...prevInfo,
+          previousState: {
+            ...prevInfo.previousState,
+            ...Object.entries(newState).reduce(
+              (acc, [key, value]) => ({
+                ...acc,
+                [key]: value,
+              }),
+              {}
+            ),
+          },
+        }));
+
+        return updatedState;
+      });
+    },
+    [setFieldsInfo, setFieldsState]
+  );
+
+  const handleBlur = useCallback(async () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+
+    const updateProps = await onUpdate?.({
+      fieldName: field.name,
+      value: fieldsState[field.name],
+      updateFieldsState,
+      previousState: fieldsInfo.previousState,
+      currentState: fieldsState,
+    });
+
+    if (updateProps?.preventUpdate) {
+      // return to previous state if update is prevented
+      setFieldsState((prevState) => ({
+        ...prevState,
+        [field.name]:
+          fieldsInfo.previousState[field.name] || field.initialValue, // Fallback to initial value if not set
+      }));
+      return;
+    }
+
+    setFieldsInfo((prevInfo) => ({
+      ...prevInfo,
+      previousState: {
+        ...prevInfo.previousState,
+        [field.name]: fieldsState[field.name],
+      },
+    }));
+  }, [
+    field.initialValue,
+    field.name,
+    fieldsInfo.previousState,
+    fieldsState,
+    onUpdate,
+    setFieldsInfo,
+    setFieldsState,
+    updateFieldsState,
+  ]);
 
   const handleChange = useCallback(
     (value: unknown) => {
@@ -26,11 +105,38 @@ function FieldComponent({ field }: { field: Field }) {
         ...prevState,
         [field.name]: value,
       }));
-    },
-    [field.name, setFieldsInfo, setFieldsState]
-  );
 
-  const handleBlur = useCallback(() => {}, []);
+      onChange?.({
+        fieldName: field.name,
+        value,
+        updateFieldsState,
+        previousState: fieldsInfo.previousState,
+        currentState: fieldsState,
+      });
+
+      if (settings?.updateDebounce) {
+        if (timerRef.current) {
+          clearTimeout(timerRef.current);
+        }
+
+        timerRef.current = setTimeout(async () => {
+          await handleBlur();
+          timerRef.current = null;
+        }, settings.updateDebounce);
+      }
+    },
+    [
+      field.name,
+      fieldsInfo.previousState,
+      fieldsState,
+      handleBlur,
+      onChange,
+      setFieldsInfo,
+      setFieldsState,
+      settings?.updateDebounce,
+      updateFieldsState,
+    ]
+  );
 
   const value = useMemo(
     () => fieldsState[field.name],

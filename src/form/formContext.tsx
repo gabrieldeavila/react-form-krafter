@@ -12,6 +12,9 @@ const Form = (props: FormUserProps) => {
     dirty: [],
     focused: [],
     touched: [],
+    previousState: Object.fromEntries(
+      props.fields.map((field) => [field.name, field.initialValue])
+    ),
   });
 
   const formValue = useMemo<FormContext>(

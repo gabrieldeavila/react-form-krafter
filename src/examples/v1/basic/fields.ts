@@ -8,7 +8,7 @@ export const BASIC_FIELDS_EXAMPLE: Field[] = [
     required: true,
     disabled: false,
     type: "text",
-    initialValue: ""
+    initialValue: "",
   },
   {
     name: "number",
@@ -17,6 +17,6 @@ export const BASIC_FIELDS_EXAMPLE: Field[] = [
     required: true,
     disabled: false,
     type: "number",
-    initialValue: 10
+    initialValue: 10,
   },
 ];

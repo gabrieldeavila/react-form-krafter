@@ -17,8 +17,25 @@ const COMPONENTS: RegisterComponent[] = [
 
 function ExampleV1Basic() {
   return (
-    <Register components={COMPONENTS}>
-      <Form fields={BASIC_FIELDS_EXAMPLE} />
+    <Register
+      components={COMPONENTS}
+      settings={{
+        updateDebounce: 300, // Example debounce setting
+      }}
+    >
+      <Form
+        fields={BASIC_FIELDS_EXAMPLE}
+        onUpdate={async ({ fieldName, value }) => {
+          if (fieldName === "text" && (value as string).length > 3) {
+            return { preventUpdate: true }; // Example of preventing the update
+          }
+        }}
+        onChange={({ fieldName, updateFieldsState }) => {
+          if (fieldName === "number") {
+            updateFieldsState({ text: "..." }); // Example of updating state
+          }
+        }}
+      />
     </Register>
   );
 }

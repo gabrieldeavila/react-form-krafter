@@ -22,6 +22,11 @@ export type RegisterComponent = {
   render: ComponentType<RegisterFieldRenderProps>;
 };
 
-export type RegisterContext = Partial<{
-  components: RegisterComponent[];
+export type RegisterSettings = Partial<{
+  updateDebounce: number; // Debounce time for updates in milliseconds
 }>;
+
+export type RegisterContext = {
+  components: RegisterComponent[];
+  settings?: RegisterSettings;
+};
