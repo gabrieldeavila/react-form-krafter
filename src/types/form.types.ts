@@ -1,52 +1,54 @@
+import type { StandardSchemaV1 } from "@standard-schema/spec";
 import type { Field } from "./field.types";
 
 export type OnUpdate = {
   preventUpdate?: boolean;
 };
 
-export type FormApi = {
+export type FormApi<T> = {
   reset: () => void;
-  updateFieldsState: (newState: Record<string, unknown>) => void;
-  setFieldsState: React.Dispatch<React.SetStateAction<Record<string, unknown>>>;
-  setFieldsInfo: React.Dispatch<React.SetStateAction<FieldsInfo>>;
-  fieldsState: Record<string, unknown>;
-  fieldsInfo: FieldsInfo;
+  updateFieldsState: (newState: Partial<T>) => void;
+  setFieldsState: React.Dispatch<React.SetStateAction<T>>;
+  setFieldsInfo: React.Dispatch<React.SetStateAction<FieldsInfo<T>>>;
+  fieldsState: T;
+  fieldsInfo: FieldsInfo<T>;
 };
 
-export type FormUserProps = {
+export type FormUserProps<T, G extends StandardSchemaV1> = {
   fields: Field[];
   onUpdate?: (props: {
-    fieldName: string;
-    value: unknown;
-    updateFieldsState: FormApi["updateFieldsState"];
+    fieldName: keyof T;
+    value: T[keyof T];
+    updateFieldsState: FormApi<T>["updateFieldsState"];
     reset: () => void;
-    previousState: Record<string, unknown>;
-    currentState: Record<string, unknown>;
+    previousState: T;
+    currentState: T;
   }) => void | Promise<OnUpdate | void>;
   onChange?: (props: {
-    fieldName: string;
-    value: unknown;
+    fieldName: keyof T;
+    value:  T[keyof T];
     reset: () => void;
-    updateFieldsState: FormApi["updateFieldsState"];
-    previousState: Record<string, unknown>;
-    currentState: Record<string, unknown>;
+    updateFieldsState: FormApi<T>["updateFieldsState"];
+    previousState: T;
+    currentState: T;
   }) => void | Promise<void>;
+  schema: G;
 };
 
-export type FormUserConfigProps = Partial<{
-  formApi: React.RefObject<FormApi | null>;
-  children: React.ReactNode | null | ((formApi: FormApi) => React.ReactNode);
+export type FormUserConfigProps<T> = Partial<{
+  formApi: React.RefObject<FormApi<T> | null>;
+  children: React.ReactNode | null | ((formApi: FormApi<T>) => React.ReactNode);
 }>;
 
-export type FormContext = FormUserProps & {
-  fieldsState: Record<string, unknown>;
-  setFieldsState: React.Dispatch<React.SetStateAction<Record<string, unknown>>>;
+export type FormContext<T, G extends StandardSchemaV1> = FormUserProps<T, G> & {
+  fieldsState: T;
+  setFieldsState: React.Dispatch<React.SetStateAction<T>>;
 
-  fieldsInfo: FieldsInfo;
-  setFieldsInfo: React.Dispatch<React.SetStateAction<FieldsInfo>>;
+  fieldsInfo: FieldsInfo<T>;
+  setFieldsInfo: React.Dispatch<React.SetStateAction<FieldsInfo<T>>>;
 
   reset: () => void;
-  updateFieldsState: FormApi["updateFieldsState"];
+  updateFieldsState: FormApi<T>["updateFieldsState"];
 };
 
 export type FieldMethods = {
@@ -54,10 +56,10 @@ export type FieldMethods = {
   onBlur: () => void;
 };
 
-export type FieldsInfo = {
+export type FieldsInfo<T> = {
   touched: string[];
   focused: string[];
   dirty: string[];
-  previousState: Record<string, unknown>;
-  initialState: Record<string, unknown>;
+  previousState: T;
+  initialState: T;
 };

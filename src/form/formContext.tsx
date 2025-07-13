@@ -15,21 +15,25 @@ import type {
   FormUserProps,
 } from "../types";
 import Field from "./field";
+import type { StandardSchemaV1 } from "@standard-schema/spec";
 
-const FormContext = createContext<FormContext | null>(null);
+const FormContext = createContext<FormContext<unknown, StandardSchemaV1<unknown, unknown>> | null>(null);
 
-const Form = ({ formApi, ...props }: FormUserConfigProps & FormUserProps) => {
-  const [fieldsState, setFieldsState] = useState<Record<string, unknown>>({});
-
-  const initialState = useMemo(
+const Form = <T, G extends StandardSchemaV1>({
+  formApi,
+  ...props
+}: FormUserConfigProps<T> & FormUserProps<T, G>) => {
+  const initialState: T = useMemo(
     () =>
       Object.fromEntries(
         props.fields.map((field) => [field.name, field.initialValue])
-      ),
+      ) as T,
     [props.fields]
   );
 
-  const [fieldsInfo, setFieldsInfo] = useState<FieldsInfo>({
+  const [fieldsState, setFieldsState] = useState<T>(initialState);
+
+  const [fieldsInfo, setFieldsInfo] = useState<FieldsInfo<T>>({
     dirty: [],
     focused: [],
     touched: [],
@@ -49,7 +53,7 @@ const Form = ({ formApi, ...props }: FormUserConfigProps & FormUserProps) => {
   }, [fieldsInfo.initialState, setFieldsInfo, setFieldsState]);
 
   const updateFieldsState = useCallback(
-    (newState: Record<string, unknown>) => {
+    (newState: Partial<T>) => {
       setFieldsState((prevState) => {
         const updatedState = {
           ...prevState,
@@ -76,7 +80,7 @@ const Form = ({ formApi, ...props }: FormUserConfigProps & FormUserProps) => {
     [setFieldsInfo, setFieldsState]
   );
 
-  const formValue = useMemo<FormContext>(
+  const formValue = useMemo<FormContext<T, G>>(
     () => ({
       ...props,
       fieldsInfo,
@@ -103,7 +107,7 @@ const Form = ({ formApi, ...props }: FormUserConfigProps & FormUserProps) => {
   );
 
   return (
-    <FormContext.Provider value={formValue}>
+    <FormContext.Provider value={formValue as FormContext<unknown, StandardSchemaV1<unknown, unknown>>}>
       <Suspense fallback={<div>Loading...</div>}>
         {props.fields?.map((field, index) => {
           return <Field key={index} field={field} />;
@@ -119,12 +123,28 @@ const Form = ({ formApi, ...props }: FormUserConfigProps & FormUserProps) => {
 
 export default Form;
 
-export const useForm = () => {
-  const context = useContext(FormContext);
+export function useForm<T>() {
+  const context = useContext(FormContext) as FormContext<T, StandardSchemaV1<T, unknown>> | null;
 
   if (!context) {
     throw new Error("useForm must be used within a Form");
   }
 
   return context;
-};
+}
+
+export function useInternalForm() {
+  // this hook should only be used internally by the library
+  // it provides access to the form context without exposing the FormContext type
+  // it should not be used by end users of the library
+  // it is a convenience hook that wraps useForm and casts the context to FormContext<any>
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const context = useContext(FormContext) as FormContext<any, StandardSchemaV1<any, unknown>> | null;
+
+  if (!context) {
+    throw new Error("useInternalForm must be used within a Form");
+  }
+
+  return context;
+}

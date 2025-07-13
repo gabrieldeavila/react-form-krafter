@@ -11,7 +11,7 @@ export const BASIC_FIELDS_EXAMPLE: Field[] = [
     initialValue: "",
   },
   {
-    name: "number",
+    name: "age",
     label: "Number Field",
     placeholder: "Enter number",
     required: true,

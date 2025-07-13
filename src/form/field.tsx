@@ -1,8 +1,9 @@
 import { useCallback, useMemo, useRef } from "react";
 import { useRegister } from "../register/registerContext";
 import type { Field } from "../types/field.types";
-import { useForm } from "./formContext";
-import type { RegisterField } from "../types";
+import { useInternalForm } from "./formContext";
+import type { FieldsInfo, RegisterField } from "../types";
+import { standardValidate } from "../validation/standard";
 
 function FieldComponent({ field }: { field: Field }) {
   const { components, settings } = useRegister();
@@ -15,7 +16,8 @@ function FieldComponent({ field }: { field: Field }) {
     fieldsInfo,
     updateFieldsState,
     reset,
-  } = useForm();
+    schema,
+  } = useInternalForm();
 
   const timerRef = useRef<number | null>(null);
 
@@ -30,6 +32,15 @@ function FieldComponent({ field }: { field: Field }) {
       timerRef.current = null;
     }
 
+    if (schema) {
+      const validationResult = standardValidate(schema, fieldsState);
+      if (validationResult instanceof Promise) {
+        await validationResult;
+      }
+
+      console.log("Validation result:", validationResult);
+    }
+
     const updateProps = await onUpdate?.({
       fieldName: field.name,
       value: fieldsState[field.name],
@@ -41,7 +52,7 @@ function FieldComponent({ field }: { field: Field }) {
 
     if (updateProps?.preventUpdate) {
       // return to previous state if update is prevented
-      setFieldsState((prevState) => ({
+      setFieldsState((prevState: Record<string, unknown>) => ({
         ...prevState,
         [field.name]:
           fieldsInfo.previousState[field.name] || field.initialValue, // Fallback to initial value if not set
@@ -49,7 +60,7 @@ function FieldComponent({ field }: { field: Field }) {
       return;
     }
 
-    setFieldsInfo((prevInfo) => ({
+    setFieldsInfo((prevInfo: FieldsInfo<Record<string, unknown>>) => ({
       ...prevInfo,
       previousState: {
         ...prevInfo.previousState,
@@ -57,15 +68,16 @@ function FieldComponent({ field }: { field: Field }) {
       },
     }));
   }, [
-    field.initialValue,
-    field.name,
-    fieldsInfo.previousState,
-    fieldsState,
+    schema,
     onUpdate,
-    setFieldsInfo,
-    reset,
-    setFieldsState,
+    field.name,
+    field.initialValue,
+    fieldsState,
     updateFieldsState,
+    fieldsInfo.previousState,
+    reset,
+    setFieldsInfo,
+    setFieldsState,
   ]);
 
   const handleChange = useCallback(
@@ -77,7 +89,7 @@ function FieldComponent({ field }: { field: Field }) {
           : [...(prevInfo.dirty || []), field.name],
       }));
 
-      setFieldsState((prevState) => ({
+      setFieldsState((prevState: Record<string, unknown>) => ({
         ...prevState,
         [field.name]: value,
       }));

@@ -1,4 +1,5 @@
 import { lazy, useRef } from "react";
+import { z } from "zod";
 import Form from "../../../form/formContext";
 import Register from "../../../register/registerContext";
 import type { FormApi, RegisterComponent } from "../../../types";
@@ -15,8 +16,16 @@ const COMPONENTS: RegisterComponent[] = [
   },
 ];
 
+const schema = z.object({
+  text: z.string().min(3, "Text must be at least 3 characters long"),
+  age: z.number().min(18, "Age must be at least 18"),
+});
+
+type Schema = typeof schema;
+type Validator = z.infer<Schema>;
+
 function ExampleV1Basic() {
-  const formApi = useRef<FormApi>(null);
+  const formApi = useRef<FormApi<Validator> | null>(null);
 
   return (
     <Register
@@ -25,17 +34,22 @@ function ExampleV1Basic() {
         updateDebounce: 300, // Example debounce setting
       }}
     >
-      <Form
+      <Form<Validator, Schema>
+        schema={schema}
         formApi={formApi}
         fields={BASIC_FIELDS_EXAMPLE}
         onUpdate={async ({ fieldName, value }) => {
-          if (fieldName === "text" && (value as string).length > 3) {
+          if (
+            fieldName === "text" &&
+            typeof value === "string" &&
+            value.length > 3
+          ) {
             return { preventUpdate: true }; // Example of preventing the update
           }
         }}
-        onChange={({ fieldName, updateFieldsState }) => {
-          if (fieldName === "number") {
-            updateFieldsState({ text: "..." }); // Example of updating state
+        onChange={async ({ fieldName, updateFieldsState }) => {
+          if (fieldName === "age") {
+            updateFieldsState({ age: 30 }); // Example of updating state
           }
         }}
       >
