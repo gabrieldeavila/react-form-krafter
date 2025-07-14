@@ -1,9 +1,9 @@
 import { useCallback, useMemo, useRef } from "react";
 import { useRegister } from "../register/registerContext";
-import type { Field } from "../types/field.types";
-import { useInternalForm } from "./formContext";
 import type { FieldsInfo, RegisterField } from "../types";
+import type { Field } from "../types/field.types";
 import { standardValidate } from "../validation/standard";
+import { useInternalForm } from "./formContext";
 
 function FieldComponent({ field }: { field: Field }) {
   const { components, settings } = useRegister();
@@ -14,8 +14,6 @@ function FieldComponent({ field }: { field: Field }) {
     setFieldsInfo,
     fieldsState,
     fieldsInfo,
-    updateFieldsState,
-    reset,
     schema,
   } = useInternalForm();
 
@@ -26,59 +24,78 @@ function FieldComponent({ field }: { field: Field }) {
     [components, field.type]
   );
 
-  const handleBlur = useCallback(async () => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
+  const handleBlur = useCallback(
+    async (e?: React.FocusEvent<unknown>) => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+      const wasBlurEvent = e?.type === "blur";
 
-    if (schema) {
-      const validationResult = standardValidate(schema, fieldsState);
-      if (validationResult instanceof Promise) {
-        await validationResult;
+      if (wasBlurEvent) {
+        setFieldsInfo((prevInfo) => ({
+          ...prevInfo,
+          blurred: prevInfo.blurred.includes(field.name)
+            ? prevInfo.blurred
+            : [...(prevInfo.blurred || []), field.name],
+        }));
       }
 
-      console.log("Validation result:", validationResult);
-    }
+      if (schema) {
+        // only validate the current field
+        const validationResult = await standardValidate(schema, fieldsState);
+        if (validationResult instanceof Array) {
+          const issues = validationResult.reduce(
+            (acc, issue) => ({
+              ...acc,
+              [issue.path.join(".")]: issue.message,
+            }),
+            {}
+          );
 
-    const updateProps = await onUpdate?.({
-      fieldName: field.name,
-      value: fieldsState[field.name],
-      updateFieldsState,
-      previousState: fieldsInfo.previousState,
-      currentState: fieldsState,
-      reset,
-    });
+          setFieldsInfo((prevInfo: FieldsInfo<Record<string, unknown>>) => ({
+            ...prevInfo,
+            errors: issues,
+          }));
+        }
+      }
 
-    if (updateProps?.preventUpdate) {
-      // return to previous state if update is prevented
-      setFieldsState((prevState: Record<string, unknown>) => ({
-        ...prevState,
-        [field.name]:
-          fieldsInfo.previousState[field.name] || field.initialValue, // Fallback to initial value if not set
+      const updateProps = await onUpdate?.({
+        fieldName: field.name,
+        value: fieldsState[field.name],
+        previousState: fieldsInfo.previousState,
+        currentState: fieldsState,
+      });
+
+      if (updateProps?.preventUpdate) {
+        // return to previous state if update is prevented
+        setFieldsState((prevState: Record<string, unknown>) => ({
+          ...prevState,
+          [field.name]:
+            fieldsInfo.previousState[field.name] || field.initialValue, // Fallback to initial value if not set
+        }));
+        return;
+      }
+
+      setFieldsInfo((prevInfo: FieldsInfo<Record<string, unknown>>) => ({
+        ...prevInfo,
+        previousState: {
+          ...prevInfo.previousState,
+          [field.name]: fieldsState[field.name],
+        },
       }));
-      return;
-    }
-
-    setFieldsInfo((prevInfo: FieldsInfo<Record<string, unknown>>) => ({
-      ...prevInfo,
-      previousState: {
-        ...prevInfo.previousState,
-        [field.name]: fieldsState[field.name],
-      },
-    }));
-  }, [
-    schema,
-    onUpdate,
-    field.name,
-    field.initialValue,
-    fieldsState,
-    updateFieldsState,
-    fieldsInfo.previousState,
-    reset,
-    setFieldsInfo,
-    setFieldsState,
-  ]);
+    },
+    [
+      schema,
+      onUpdate,
+      field.name,
+      field.initialValue,
+      fieldsState,
+      fieldsInfo.previousState,
+      setFieldsInfo,
+      setFieldsState,
+    ]
+  );
 
   const handleChange = useCallback(
     (value: unknown) => {
@@ -97,8 +114,6 @@ function FieldComponent({ field }: { field: Field }) {
       onChange?.({
         fieldName: field.name,
         value,
-        updateFieldsState,
-        reset,
         previousState: fieldsInfo.previousState,
         currentState: fieldsState,
       });
@@ -123,8 +138,6 @@ function FieldComponent({ field }: { field: Field }) {
       setFieldsInfo,
       setFieldsState,
       settings?.updateDebounce,
-      updateFieldsState,
-      reset,
     ]
   );
 
@@ -145,6 +158,11 @@ function FieldComponent({ field }: { field: Field }) {
 
   const isPristine = useMemo(() => !isDirty, [isDirty]);
 
+  const isBlurred = useMemo(
+    () => fieldsInfo.blurred?.includes(field.name),
+    [fieldsInfo, field.name]
+  );
+
   const isFocused = useMemo(
     () => fieldsInfo.focused?.includes(field.name),
     [fieldsInfo, field.name]
@@ -155,7 +173,12 @@ function FieldComponent({ field }: { field: Field }) {
     [value, field.initialValue]
   );
 
-  const fieldData = useMemo<RegisterField>(
+  const isDisabled = useMemo(
+    () => fieldsInfo.disabled?.includes(field.name),
+    [fieldsInfo, field.name]
+  );
+
+  const fieldData = useMemo<RegisterField<unknown>>(
     () => ({
       ...field,
       value,
@@ -164,9 +187,22 @@ function FieldComponent({ field }: { field: Field }) {
       isFocused,
       isDefaultValue,
       isPristine,
-      error: null, // Error handling can be added later
+      isBlurred,
+      isDisabled: isDisabled || field.disabled || false,
+      error: fieldsInfo.errors?.[field.name] || null,
     }),
-    [field, value, isTouched, isDirty, isFocused, isDefaultValue, isPristine]
+    [
+      field,
+      value,
+      isTouched,
+      isDirty,
+      isFocused,
+      isDefaultValue,
+      isPristine,
+      isBlurred,
+      isDisabled,
+      fieldsInfo.errors,
+    ]
   );
 
   return (

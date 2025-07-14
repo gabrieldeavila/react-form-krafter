@@ -2,20 +2,20 @@
 import { createContext, useContext, useMemo } from "react";
 import type { RegisterContext } from "../types";
 
-const RegisterContext = createContext<RegisterContext | null>(null);
+const RegisterContext = createContext<RegisterContext<unknown> | null>(null);
 
-const Register = ({
+const Register = <T,>({
   children,
   components,
   settings = {},
-}: RegisterContext & { children: React.ReactNode }) => {
+}: RegisterContext<T> & { children: React.ReactNode }) => {
   const value = useMemo(
     () => ({ components, settings }),
     [components, settings]
   );
-
+  
   return (
-    <RegisterContext.Provider value={value}>
+    <RegisterContext.Provider value={value as RegisterContext<unknown>}>
       {children}
     </RegisterContext.Provider>
   );

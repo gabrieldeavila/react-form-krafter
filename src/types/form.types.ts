@@ -10,6 +10,8 @@ export type FormApi<T> = {
   updateFieldsState: (newState: Partial<T>) => void;
   setFieldsState: React.Dispatch<React.SetStateAction<T>>;
   setFieldsInfo: React.Dispatch<React.SetStateAction<FieldsInfo<T>>>;
+  setDisabled: (fieldName: keyof T, disabled: boolean) => void;
+  setError: (fieldName: keyof T, error: string | null) => void;
   fieldsState: T;
   fieldsInfo: FieldsInfo<T>;
 };
@@ -19,16 +21,12 @@ export type FormUserProps<T, G extends StandardSchemaV1> = {
   onUpdate?: (props: {
     fieldName: keyof T;
     value: T[keyof T];
-    updateFieldsState: FormApi<T>["updateFieldsState"];
-    reset: () => void;
     previousState: T;
     currentState: T;
   }) => void | Promise<OnUpdate | void>;
   onChange?: (props: {
     fieldName: keyof T;
     value:  T[keyof T];
-    reset: () => void;
-    updateFieldsState: FormApi<T>["updateFieldsState"];
     previousState: T;
     currentState: T;
   }) => void | Promise<void>;
@@ -60,6 +58,9 @@ export type FieldsInfo<T> = {
   touched: string[];
   focused: string[];
   dirty: string[];
+  blurred: string[];
+  errors: Record<string, string>;
+  disabled: (keyof T)[];
   previousState: T;
   initialState: T;
 };

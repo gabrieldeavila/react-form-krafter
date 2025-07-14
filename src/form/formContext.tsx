@@ -1,4 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
+import type { StandardSchemaV1 } from "@standard-schema/spec";
 import {
   createContext,
   Suspense,
@@ -15,9 +16,11 @@ import type {
   FormUserProps,
 } from "../types";
 import Field from "./field";
-import type { StandardSchemaV1 } from "@standard-schema/spec";
 
-const FormContext = createContext<FormContext<unknown, StandardSchemaV1<unknown, unknown>> | null>(null);
+const FormContext = createContext<FormContext<
+  unknown,
+  StandardSchemaV1<unknown, unknown>
+> | null>(null);
 
 const Form = <T, G extends StandardSchemaV1>({
   formApi,
@@ -37,7 +40,10 @@ const Form = <T, G extends StandardSchemaV1>({
     dirty: [],
     focused: [],
     touched: [],
+    blurred: [],
     initialState,
+    errors: {},
+    disabled: [],
     previousState: initialState,
   });
 
@@ -80,6 +86,42 @@ const Form = <T, G extends StandardSchemaV1>({
     [setFieldsInfo, setFieldsState]
   );
 
+  const setDisabled = useCallback(
+    (fieldName: keyof T, disabled: boolean) => {
+      setFieldsInfo((prevInfo) => {
+        const disabledFields = disabled
+          ? [...prevInfo.disabled, fieldName]
+          : prevInfo.disabled.filter((name) => name !== fieldName);
+
+        return {
+          ...prevInfo,
+          disabled: disabledFields,
+        };
+      });
+    },
+    [setFieldsInfo]
+  );
+
+  const setError = useCallback(
+    (fieldName: keyof T, error: string | null) => {
+      setFieldsInfo((prevInfo) => {
+        const errors = { ...prevInfo.errors };
+
+        if (error === null) {
+          delete errors[fieldName as string];
+        } else {
+          errors[fieldName as string] = error;
+        }
+
+        return {
+          ...prevInfo,
+          errors,
+        };
+      });
+    },
+    [setFieldsInfo]
+  );
+
   const formValue = useMemo<FormContext<T, G>>(
     () => ({
       ...props,
@@ -93,8 +135,7 @@ const Form = <T, G extends StandardSchemaV1>({
     [fieldsInfo, fieldsState, props, reset, updateFieldsState]
   );
 
-  useImperativeHandle(
-    formApi,
+  const formApiValue = useMemo(
     () => ({
       reset,
       updateFieldsState,
@@ -102,19 +143,27 @@ const Form = <T, G extends StandardSchemaV1>({
       setFieldsState,
       fieldsState,
       fieldsInfo,
+      setDisabled,
+      setError,
     }),
-    [fieldsInfo, fieldsState, reset, updateFieldsState]
+    [fieldsInfo, fieldsState, reset, setDisabled, setError, updateFieldsState]
   );
 
+  useImperativeHandle(formApi, () => formApiValue, [formApiValue]);
+
   return (
-    <FormContext.Provider value={formValue as FormContext<unknown, StandardSchemaV1<unknown, unknown>>}>
+    <FormContext.Provider
+      value={
+        formValue as FormContext<unknown, StandardSchemaV1<unknown, unknown>>
+      }
+    >
       <Suspense fallback={<div>Loading...</div>}>
         {props.fields?.map((field, index) => {
           return <Field key={index} field={field} />;
         })}
 
         {props.children && typeof props.children === "function"
-          ? props.children(formValue)
+          ? props.children(formApiValue)
           : props.children}
       </Suspense>
     </FormContext.Provider>
@@ -124,7 +173,10 @@ const Form = <T, G extends StandardSchemaV1>({
 export default Form;
 
 export function useForm<T>() {
-  const context = useContext(FormContext) as FormContext<T, StandardSchemaV1<T, unknown>> | null;
+  const context = useContext(FormContext) as FormContext<
+    T,
+    StandardSchemaV1<T, unknown>
+  > | null;
 
   if (!context) {
     throw new Error("useForm must be used within a Form");

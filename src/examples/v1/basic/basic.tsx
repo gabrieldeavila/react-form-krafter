@@ -1,24 +1,37 @@
-import { lazy, useRef } from "react";
+import { lazy, useRef, type ComponentType } from "react";
 import { z } from "zod";
 import Form from "../../../form/formContext";
 import Register from "../../../register/registerContext";
-import type { FormApi, RegisterComponent } from "../../../types";
+import type {
+  FormApi,
+  RegisterComponent,
+  RegisterFieldRenderProps,
+} from "../../../types";
 import { BASIC_FIELDS_EXAMPLE } from "./fields";
 
-const COMPONENTS: RegisterComponent[] = [
+type FieldsValue = number | string;
+
+const COMPONENTS: RegisterComponent<FieldsValue>[] = [
   {
     type: "text",
-    render: lazy(() => import("./components/text")),
+    render: lazy(() => import("./components/text")) as ComponentType<
+      RegisterFieldRenderProps<FieldsValue>
+    >,
   },
   {
     type: "number",
-    render: lazy(() => import("./components/number")),
+    render: lazy(() => import("./components/number")) as ComponentType<
+      RegisterFieldRenderProps<FieldsValue>
+    >,
   },
 ];
 
 const schema = z.object({
   text: z.string().min(3, "Text must be at least 3 characters long"),
-  age: z.number().min(18, "Age must be at least 18"),
+  age: z
+    .number()
+    .min(18, "Age must be at least 18")
+    .max(100, "Age must be less than 100"),
 });
 
 type Schema = typeof schema;
@@ -28,7 +41,7 @@ function ExampleV1Basic() {
   const formApi = useRef<FormApi<Validator> | null>(null);
 
   return (
-    <Register
+    <Register<FieldsValue>
       components={COMPONENTS}
       settings={{
         updateDebounce: 300, // Example debounce setting
@@ -39,17 +52,14 @@ function ExampleV1Basic() {
         formApi={formApi}
         fields={BASIC_FIELDS_EXAMPLE}
         onUpdate={async ({ fieldName, value }) => {
-          if (
-            fieldName === "text" &&
-            typeof value === "string" &&
-            value.length > 3
-          ) {
-            return { preventUpdate: true }; // Example of preventing the update
-          }
-        }}
-        onChange={async ({ fieldName, updateFieldsState }) => {
-          if (fieldName === "age") {
-            updateFieldsState({ age: 30 }); // Example of updating state
+          if (fieldName === "text" && typeof value === "string") {
+            if (value.length > 3) {
+              formApi.current?.setDisabled("age", true);
+              formApi.current?.setError("age", "Age cannot be set when text is longer than 3 characters");
+              return { preventUpdate: true }; // Example of preventing the update
+            }
+
+            formApi.current?.setDisabled("age", false);
           }
         }}
       >

@@ -9,9 +9,8 @@ export async function standardValidate<T extends StandardSchemaV1>(
 
   // if the `issues` field exists, the validation failed
   if (result.issues) {
-    console.log("Validation issues:", result.issues);
-    return false;
+    return result.issues;
   }
 
-  return result.value;
+  return true;
 }
