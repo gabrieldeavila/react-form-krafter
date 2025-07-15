@@ -1,6 +1,6 @@
 import { memo, type FC } from "react";
-import type { RegisterFieldRenderProps } from "../../../../types";
 import FieldBase from "./base";
+import type { RegisterFieldRenderProps } from "@lib/types";
 
 const FieldText: FC<RegisterFieldRenderProps<string>> = memo(
   (props: RegisterFieldRenderProps<string>) => {

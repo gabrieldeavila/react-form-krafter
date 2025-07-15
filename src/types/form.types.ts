@@ -14,10 +14,20 @@ export type FormApi<T> = {
   setError: (fieldName: keyof T, error: string | null) => void;
   fieldsState: T;
   fieldsInfo: FieldsInfo<T>;
+  onFormSubmit: (e: React.FormEvent<HTMLFormElement>) => void | Promise<void>;
 };
 
 export type FormUserProps<T, G extends StandardSchemaV1> = {
   fields: Field[];
+  onSubmit?: ({
+    errors,
+    success,
+    state,
+  }: {
+    state: T;
+    errors: Record<keyof T, string | null>;
+    success: boolean;
+  }) => void | Promise<void>;
   onUpdate?: (props: {
     fieldName: keyof T;
     value: T[keyof T];
@@ -26,7 +36,7 @@ export type FormUserProps<T, G extends StandardSchemaV1> = {
   }) => void | Promise<OnUpdate | void>;
   onChange?: (props: {
     fieldName: keyof T;
-    value:  T[keyof T];
+    value: T[keyof T];
     previousState: T;
     currentState: T;
   }) => void | Promise<void>;
@@ -59,7 +69,7 @@ export type FieldsInfo<T> = {
   focused: string[];
   dirty: string[];
   blurred: string[];
-  errors: Record<string, string>;
+  errors: Record<keyof T, string>;
   disabled: (keyof T)[];
   previousState: T;
   initialState: T;

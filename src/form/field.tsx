@@ -17,7 +17,7 @@ function FieldComponent({ field }: { field: Field }) {
     schema,
   } = useInternalForm();
 
-  const timerRef = useRef<number | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const Component = useMemo(
     () => components?.find((c) => c.type === field.type)?.render,
@@ -42,8 +42,8 @@ function FieldComponent({ field }: { field: Field }) {
       }
 
       if (schema) {
-        // only validate the current field
         const validationResult = await standardValidate(schema, fieldsState);
+
         if (validationResult instanceof Array) {
           const issues = validationResult.reduce(
             (acc, issue) => ({
@@ -53,9 +53,14 @@ function FieldComponent({ field }: { field: Field }) {
             {}
           );
 
-          setFieldsInfo((prevInfo: FieldsInfo<Record<string, unknown>>) => ({
+          setFieldsInfo((prevInfo) => ({
             ...prevInfo,
             errors: issues,
+          }));
+        } else if (validationResult === true) {
+          setFieldsInfo((prevInfo) => ({
+            ...prevInfo,
+            errors: {} as Record<keyof Record<string, unknown>, string>,
           }));
         }
       }

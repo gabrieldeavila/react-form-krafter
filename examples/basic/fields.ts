@@ -1,4 +1,4 @@
-import type { Field } from "../../../types/field.types";
+import type { Field } from "@lib/types/field.types";
 
 export const BASIC_FIELDS_EXAMPLE: Field[] = [
   {

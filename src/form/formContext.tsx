@@ -42,7 +42,7 @@ const Form = <T, G extends StandardSchemaV1>({
     touched: [],
     blurred: [],
     initialState,
-    errors: {},
+    errors: {} as Record<keyof T, string>,
     disabled: [],
     previousState: initialState,
   });
@@ -108,9 +108,9 @@ const Form = <T, G extends StandardSchemaV1>({
         const errors = { ...prevInfo.errors };
 
         if (error === null) {
-          delete errors[fieldName as string];
+          delete errors[fieldName];
         } else {
-          errors[fieldName as string] = error;
+          errors[fieldName] = error;
         }
 
         return {
@@ -120,6 +120,22 @@ const Form = <T, G extends StandardSchemaV1>({
       });
     },
     [setFieldsInfo]
+  );
+
+  const onFormSubmit = useCallback(
+    (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (props.onSubmit) {
+        props.onSubmit({
+          state: fieldsState,
+          errors: fieldsInfo.errors,
+          success: Object.keys(fieldsInfo.errors).length === 0,
+        });
+      }
+    },
+    [props, fieldsState, fieldsInfo.errors]
   );
 
   const formValue = useMemo<FormContext<T, G>>(
@@ -145,8 +161,17 @@ const Form = <T, G extends StandardSchemaV1>({
       fieldsInfo,
       setDisabled,
       setError,
+      onFormSubmit,
     }),
-    [fieldsInfo, fieldsState, reset, setDisabled, setError, updateFieldsState]
+    [
+      fieldsInfo,
+      fieldsState,
+      onFormSubmit,
+      reset,
+      setDisabled,
+      setError,
+      updateFieldsState,
+    ]
   );
 
   useImperativeHandle(formApi, () => formApiValue, [formApiValue]);
@@ -158,13 +183,15 @@ const Form = <T, G extends StandardSchemaV1>({
       }
     >
       <Suspense fallback={<div>Loading...</div>}>
-        {props.fields?.map((field, index) => {
-          return <Field key={index} field={field} />;
-        })}
+        <form onSubmit={onFormSubmit}>
+          {props.fields?.map((field, index) => {
+            return <Field key={index} field={field} />;
+          })}
 
-        {props.children && typeof props.children === "function"
-          ? props.children(formApiValue)
-          : props.children}
+          {props.children && typeof props.children === "function"
+            ? props.children(formApiValue)
+            : props.children}
+        </form>
       </Suspense>
     </FormContext.Provider>
   );
@@ -192,7 +219,7 @@ export function useInternalForm() {
   // it is a convenience hook that wraps useForm and casts the context to FormContext<any>
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const context = useContext(FormContext) as FormContext<any, StandardSchemaV1<any, unknown>> | null;
+ const context = useContext(FormContext) as FormContext<any, StandardSchemaV1<any, unknown>> | null;
 
   if (!context) {
     throw new Error("useInternalForm must be used within a Form");

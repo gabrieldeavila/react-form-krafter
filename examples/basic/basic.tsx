@@ -1,12 +1,12 @@
 import { lazy, useRef, type ComponentType } from "react";
 import { z } from "zod";
-import Form from "../../../form/formContext";
-import Register from "../../../register/registerContext";
+import Form from "@lib/form/formContext";
+import Register from "@lib/register/registerContext";
 import type {
   FormApi,
   RegisterComponent,
   RegisterFieldRenderProps,
-} from "../../../types";
+} from "@lib/types";
 import { BASIC_FIELDS_EXAMPLE } from "./fields";
 
 type FieldsValue = number | string;

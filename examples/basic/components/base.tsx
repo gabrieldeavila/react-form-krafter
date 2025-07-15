@@ -1,5 +1,5 @@
+import type { FieldMethods, RegisterField } from "@lib/types";
 import { memo } from "react";
-import type { FieldMethods, RegisterField } from "../../../../types";
 
 export type FieldBaseProps = {
   field: RegisterField<string | number>;
