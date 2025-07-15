@@ -49,6 +49,7 @@ const Form = <T, G extends StandardSchemaV1>({
     previousState: initialState,
   });
 
+  // #TODO: we could create a wrapper and only change the key - it would reset and scale better
   const reset = useCallback(() => {
     setFieldsState(fieldsInfo.initialState);
     setFieldsInfo((prevInfo) => ({
@@ -57,7 +58,12 @@ const Form = <T, G extends StandardSchemaV1>({
       dirty: [],
       focused: [],
       touched: [],
+      blurred: [],
+      errors: {} as Record<keyof T, string>,
+      disabled: [],
+      initialState: fieldsInfo.initialState
     }));
+    setDidSubmitOnce(false);
   }, [fieldsInfo.initialState, setFieldsInfo, setFieldsState]);
 
   const updateFieldsState = useCallback(

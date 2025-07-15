@@ -51,14 +51,25 @@ function ExampleV1Basic() {
           formApi={formApi}
           fields={BASIC_FIELDS_EXAMPLE}
           onSubmit={async (values) => {
+            if (values.success) {
+              alert("Form submitted successfully!");
+            } else {
+              alert("Form submission failed. Check errors.");
+            }
             console.log("Form submitted:", values);
           }}
         >
           {(formValue) => (
             <div>
+              <div className="flex gap-2">
+                <button type="submit">Submit</button>
+                <button type="button" onClick={() => formApi.current?.reset()}>
+                  Reset
+                </button>
+              </div>
+
               <h2>Current State:</h2>
               <pre>{JSON.stringify(formValue.fieldsState, null, 2)}</pre>
-              <input type="submit" value="Submit" />
             </div>
           )}
         </Form>
