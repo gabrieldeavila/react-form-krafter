@@ -66,6 +66,8 @@ button:focus-visible {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  width: 350px;
+  max-width: 100%;
 }
 
 .field-wrapper {

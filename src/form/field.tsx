@@ -15,6 +15,7 @@ function FieldComponent({ field }: { field: Field }) {
     fieldsState,
     fieldsInfo,
     schema,
+    didSubmitOnce,
   } = useInternalForm();
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -195,6 +196,7 @@ function FieldComponent({ field }: { field: Field }) {
       isBlurred,
       isDisabled: isDisabled || field.disabled || false,
       error: fieldsInfo.errors?.[field.name] || null,
+      isErrorVisible: isBlurred || didSubmitOnce,
     }),
     [
       field,
@@ -207,6 +209,7 @@ function FieldComponent({ field }: { field: Field }) {
       isBlurred,
       isDisabled,
       fieldsInfo.errors,
+      didSubmitOnce,
     ]
   );
 

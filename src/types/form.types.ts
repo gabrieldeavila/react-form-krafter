@@ -56,6 +56,8 @@ export type FormContext<T, G extends StandardSchemaV1> = FormUserProps<T, G> & {
   fieldsInfo: FieldsInfo<T>;
   setFieldsInfo: React.Dispatch<React.SetStateAction<FieldsInfo<T>>>;
 
+  didSubmitOnce: boolean;
+
   reset: () => void;
   updateFieldsState: FormApi<T>["updateFieldsState"];
 };

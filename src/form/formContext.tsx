@@ -36,6 +36,7 @@ const Form = <T, G extends StandardSchemaV1>({
   );
 
   const [fieldsState, setFieldsState] = useState<T>(initialState);
+  const [didSubmitOnce, setDidSubmitOnce] = useState(false);
 
   const [fieldsInfo, setFieldsInfo] = useState<FieldsInfo<T>>({
     dirty: [],
@@ -127,6 +128,7 @@ const Form = <T, G extends StandardSchemaV1>({
     (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       event.stopPropagation();
+      setDidSubmitOnce(true);
 
       if (props.onSubmit) {
         props.onSubmit({
@@ -148,8 +150,9 @@ const Form = <T, G extends StandardSchemaV1>({
       setFieldsState,
       reset,
       updateFieldsState,
+      didSubmitOnce,
     }),
-    [fieldsInfo, fieldsState, props, reset, updateFieldsState]
+    [didSubmitOnce, fieldsInfo, fieldsState, props, reset, updateFieldsState]
   );
 
   const formApiValue = useMemo(

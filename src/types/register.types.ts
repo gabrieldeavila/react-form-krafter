@@ -12,6 +12,7 @@ export type RegisterField<T> = BaseField & {
   isPristine: boolean;
   isBlurred: boolean;
   isDisabled: boolean;
+  isErrorVisible: boolean;
 };
 
 export type RegisterFieldRenderProps<T> = {

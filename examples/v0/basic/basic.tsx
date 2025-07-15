@@ -27,11 +27,13 @@ const COMPONENTS: RegisterComponent<FieldsValue>[] = [
 ];
 
 const schema = z.object({
-  text: z.string().min(3, "Text must be at least 3 characters long"),
+  name: z.string().min(3, "Name must be at least 3 characters long"),
+  surname: z.string().min(3, "Surname must be at least 3 characters long"),
   age: z
     .number()
     .min(18, "Age must be at least 18")
     .max(100, "Age must be less than 100"),
+  about: z.string().max(500, "About must be less than 500 characters"),
 });
 
 type Schema = typeof schema;
@@ -42,36 +44,21 @@ function ExampleV1Basic() {
 
   return (
     <div className="example-wrapper">
-      <Register<FieldsValue>
-        components={COMPONENTS}
-        settings={{
-          updateDebounce: 300, // Example debounce setting
-        }}
-      >
+      <Register<FieldsValue> components={COMPONENTS}>
         <Form<Validator, Schema>
           formClassName="fields"
           schema={schema}
           formApi={formApi}
           fields={BASIC_FIELDS_EXAMPLE}
-          onUpdate={async ({ fieldName, value }) => {
-            if (fieldName === "text" && typeof value === "string") {
-              if (value.length > 3) {
-                formApi.current?.setDisabled("age", true);
-                formApi.current?.setError(
-                  "age",
-                  "Age cannot be set when text is longer than 3 characters"
-                );
-                return { preventUpdate: true }; // Example of preventing the update
-              }
-
-              formApi.current?.setDisabled("age", false);
-            }
+          onSubmit={async (values) => {
+            console.log("Form submitted:", values);
           }}
         >
           {(formValue) => (
             <div>
               <h2>Current State:</h2>
               <pre>{JSON.stringify(formValue.fieldsState, null, 2)}</pre>
+              <input type="submit" value="Submit" />
             </div>
           )}
         </Form>

@@ -43,7 +43,7 @@ const FieldBase = memo(
           onBlur={methods.onBlur}
         />
 
-        {field.error && field.isBlurred && <span className="error">{field.error}</span>}
+        {field.error && field.isErrorVisible && <span className="error">{field.error}</span>}
       </div>
     );
   }
