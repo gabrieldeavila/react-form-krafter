@@ -17,7 +17,7 @@ const FieldBase = memo(
     onFieldChange: (value: unknown) => string | number;
   }) => {
     return (
-      <div>
+      <div className="field-wrapper">
         <label htmlFor={field.name}>{field.label}</label>
 
         <input

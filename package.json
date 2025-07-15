@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:example": "vite ./examples/ --config vite.config.ts",
+    "dev:example": "vite ./examples/v0 --config vite.config.ts",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"

@@ -24,6 +24,7 @@ const FormContext = createContext<FormContext<
 
 const Form = <T, G extends StandardSchemaV1>({
   formApi,
+  formClassName,
   ...props
 }: FormUserConfigProps<T> & FormUserProps<T, G>) => {
   const initialState: T = useMemo(
@@ -183,7 +184,7 @@ const Form = <T, G extends StandardSchemaV1>({
       }
     >
       <Suspense fallback={<div>Loading...</div>}>
-        <form onSubmit={onFormSubmit}>
+        <form className={formClassName} onSubmit={onFormSubmit}>
           {props.fields?.map((field, index) => {
             return <Field key={index} field={field} />;
           })}
