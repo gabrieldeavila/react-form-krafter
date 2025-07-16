@@ -12,6 +12,7 @@ export type FormApi<T> = {
   setFieldsInfo: React.Dispatch<React.SetStateAction<FieldsInfo<T>>>;
   setDisabled: (fieldName: keyof T, disabled: boolean) => void;
   setError: (fieldName: keyof T, error: string | null) => void;
+  setFieldValue: (fieldName: keyof T, value: T[keyof T]) => void;
   fieldsState: T;
   isSubmitting: boolean;
   fieldsInfo: FieldsInfo<T>;
@@ -59,6 +60,8 @@ export type FormContext<T, G extends StandardSchemaV1> = FormUserProps<T, G> & {
 
   didSubmitOnce: boolean;
   isSubmitting: boolean;
+
+  setFieldValue: (fieldName: keyof T, value: T[keyof T]) => void;
 
   reset: () => void;
   updateFieldsState: FormApi<T>["updateFieldsState"];

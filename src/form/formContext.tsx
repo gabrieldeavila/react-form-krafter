@@ -153,6 +153,21 @@ const Form = <T, G extends StandardSchemaV1>({
     [props, fieldsState, fieldsInfo.errors]
   );
 
+  const setFieldValue = useCallback(
+    async (fieldName: keyof T, value: T[keyof T]) => {
+      if (!fieldName) {
+        console.warn("Field name is required to set value");
+        return;
+      }
+
+      setFieldsState((prevState) => ({
+        ...prevState,
+        [fieldName]: value,
+      }));
+    },
+    [setFieldsState]
+  );
+
   const formValue = useMemo<FormContext<T, G>>(
     () => ({
       ...props,
@@ -164,6 +179,7 @@ const Form = <T, G extends StandardSchemaV1>({
       updateFieldsState,
       didSubmitOnce,
       isSubmitting,
+      setFieldValue,
     }),
     [
       didSubmitOnce,
@@ -172,6 +188,7 @@ const Form = <T, G extends StandardSchemaV1>({
       isSubmitting,
       props,
       reset,
+      setFieldValue,
       updateFieldsState,
     ]
   );
@@ -188,6 +205,7 @@ const Form = <T, G extends StandardSchemaV1>({
       setError,
       onFormSubmit,
       isSubmitting,
+      setFieldValue,
     }),
     [
       fieldsInfo,
@@ -197,6 +215,7 @@ const Form = <T, G extends StandardSchemaV1>({
       reset,
       setDisabled,
       setError,
+      setFieldValue,
       updateFieldsState,
     ]
   );

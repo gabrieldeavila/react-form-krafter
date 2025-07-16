@@ -3,15 +3,20 @@ import { lazy, Suspense, useMemo, useState } from "react";
 
 const ExampleV0BasicAsync = lazy(() => import("./basic_async"));
 const ExampleV0Basic = lazy(() => import("./basic"));
+const ExampleV0Select = lazy(() => import("./select"));
 
 const OPTIONS = {
   basic: {
-    title: "Basic Example",
+    title: "Basic",
     component: ExampleV0Basic,
   },
   basicAsync: {
-    title: "Basic Async Example",
+    title: "Basic Async Submit",
     component: ExampleV0BasicAsync,
+  },
+  select: {
+    title: "Select and Linked Fields",
+    component: ExampleV0Select,
   },
 };
 
