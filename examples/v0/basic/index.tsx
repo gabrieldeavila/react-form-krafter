@@ -39,7 +39,7 @@ const schema = z.object({
 type Schema = typeof schema;
 type Validator = z.infer<Schema>;
 
-function ExampleV1Basic() {
+function ExampleV0Basic() {
   const formApi = useRef<FormApi<Validator> | null>(null);
 
   return (
@@ -78,4 +78,4 @@ function ExampleV1Basic() {
   );
 }
 
-export default ExampleV1Basic;
+export default ExampleV0Basic;

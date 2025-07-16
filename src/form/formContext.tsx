@@ -36,6 +36,7 @@ const Form = <T, G extends StandardSchemaV1>({
   );
 
   const [fieldsState, setFieldsState] = useState<T>(initialState);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [didSubmitOnce, setDidSubmitOnce] = useState(false);
 
   const [fieldsInfo, setFieldsInfo] = useState<FieldsInfo<T>>({
@@ -61,7 +62,7 @@ const Form = <T, G extends StandardSchemaV1>({
       blurred: [],
       errors: {} as Record<keyof T, string>,
       disabled: [],
-      initialState: fieldsInfo.initialState
+      initialState: fieldsInfo.initialState,
     }));
     setDidSubmitOnce(false);
   }, [fieldsInfo.initialState, setFieldsInfo, setFieldsState]);
@@ -131,17 +132,22 @@ const Form = <T, G extends StandardSchemaV1>({
   );
 
   const onFormSubmit = useCallback(
-    (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      event.stopPropagation();
-      setDidSubmitOnce(true);
+    async (event: React.FormEvent<HTMLFormElement>) => {
+      try {
+        event.preventDefault();
+        event.stopPropagation();
+        setIsSubmitting(true);
+        setDidSubmitOnce(true);
 
-      if (props.onSubmit) {
-        props.onSubmit({
-          state: fieldsState,
-          errors: fieldsInfo.errors,
-          success: Object.keys(fieldsInfo.errors).length === 0,
-        });
+        if (props.onSubmit) {
+          await props.onSubmit({
+            state: fieldsState,
+            errors: fieldsInfo.errors,
+            success: Object.keys(fieldsInfo.errors).length === 0,
+          });
+        }
+      } finally {
+        setIsSubmitting(false);
       }
     },
     [props, fieldsState, fieldsInfo.errors]
@@ -157,8 +163,17 @@ const Form = <T, G extends StandardSchemaV1>({
       reset,
       updateFieldsState,
       didSubmitOnce,
+      isSubmitting,
     }),
-    [didSubmitOnce, fieldsInfo, fieldsState, props, reset, updateFieldsState]
+    [
+      didSubmitOnce,
+      fieldsInfo,
+      fieldsState,
+      isSubmitting,
+      props,
+      reset,
+      updateFieldsState,
+    ]
   );
 
   const formApiValue = useMemo(
@@ -172,10 +187,12 @@ const Form = <T, G extends StandardSchemaV1>({
       setDisabled,
       setError,
       onFormSubmit,
+      isSubmitting,
     }),
     [
       fieldsInfo,
       fieldsState,
+      isSubmitting,
       onFormSubmit,
       reset,
       setDisabled,
@@ -228,8 +245,12 @@ export function useInternalForm() {
   // it should not be used by end users of the library
   // it is a convenience hook that wraps useForm and casts the context to FormContext<any>
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
- const context = useContext(FormContext) as FormContext<any, StandardSchemaV1<any, unknown>> | null;
+  const context = useContext(FormContext) as FormContext<
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    StandardSchemaV1<any, unknown>
+  > | null;
 
   if (!context) {
     throw new Error("useInternalForm must be used within a Form");
