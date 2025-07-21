@@ -12,10 +12,10 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       react:
-        specifier: ^19.1.0
+        specifier: ^16.8.0 || ^17 || ^18 || ^19
         version: 19.1.0
       react-dom:
-        specifier: ^19.1.0
+        specifier: ^16.8.0 || ^17 || ^18 || ^19
         version: 19.1.0(react@19.1.0)
     devDependencies:
       '@eslint/js':
