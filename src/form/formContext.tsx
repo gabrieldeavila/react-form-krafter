@@ -1,7 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import {
-  createContext,
   Suspense,
   useCallback,
   useContext,
@@ -16,11 +15,7 @@ import type {
   FormUserProps,
 } from "../types";
 import Field from "./field";
-
-const FormContext = createContext<FormContext<
-  unknown,
-  StandardSchemaV1<unknown, unknown>
-> | null>(null);
+import { FormContextCreate } from "./internal";
 
 const Form = <T, G extends StandardSchemaV1>({
   formApi,
@@ -223,7 +218,7 @@ const Form = <T, G extends StandardSchemaV1>({
   useImperativeHandle(formApi, () => formApiValue, [formApiValue]);
 
   return (
-    <FormContext.Provider
+    <FormContextCreate.Provider
       value={
         formValue as FormContext<unknown, StandardSchemaV1<unknown, unknown>>
       }
@@ -236,43 +231,23 @@ const Form = <T, G extends StandardSchemaV1>({
 
           {props.children && typeof props.children === "function"
             ? props.children(formApiValue)
-            : props.children}
+            : (props.children as React.ReactNode)}
         </form>
       </Suspense>
-    </FormContext.Provider>
+    </FormContextCreate.Provider>
   );
 };
 
 export default Form;
 
 export function useForm<T>() {
-  const context = useContext(FormContext) as FormContext<
+  const context = useContext(FormContextCreate) as FormContext<
     T,
     StandardSchemaV1<T, unknown>
   > | null;
 
   if (!context) {
     throw new Error("useForm must be used within a Form");
-  }
-
-  return context;
-}
-
-export function useInternalForm() {
-  // this hook should only be used internally by the library
-  // it provides access to the form context without exposing the FormContext type
-  // it should not be used by end users of the library
-  // it is a convenience hook that wraps useForm and casts the context to FormContext<any>
-
-  const context = useContext(FormContext) as FormContext<
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    any,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    StandardSchemaV1<any, unknown>
-  > | null;
-
-  if (!context) {
-    throw new Error("useInternalForm must be used within a Form");
   }
 
   return context;

@@ -28,7 +28,7 @@ function Example() {
   }, [example]);
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<div className="center">Loading...</div>}>
       <div className="example-selector">
         <h1>Select an Example</h1>
         <select

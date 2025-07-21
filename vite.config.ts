@@ -4,10 +4,31 @@ import path from "path";
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+  ],
   resolve: {
     alias: {
       "@lib": path.resolve(__dirname, "./src"),
+    },
+  },
+  build: {
+    outDir: "dist",
+    emptyOutDir: true,
+    lib: {
+      entry: path.resolve(__dirname, "src/index.ts"),
+      name: "ReactFormCrafter",
+      fileName: (format) => `react-form-crafter.${format}.js`,
+    },
+    rollupOptions: {
+      external: ["react", "react-dom", "@standard-schema/spec"],
+      output: {
+        globals: {
+          react: "React",
+          "react-dom": "ReactDOM",
+          "@standard-schema/spec": "StandardSchema",
+        },
+      },
     },
   },
 });

@@ -3,7 +3,7 @@ import { useRegister } from "../register/registerContext";
 import type { FieldsInfo, RegisterField } from "../types";
 import type { Field } from "../types/field.types";
 import { standardValidate } from "../validation/standard";
-import { useInternalForm } from "./formContext";
+import { useInternalForm } from "./internal";
 
 function FieldComponent({ field }: { field: Field }) {
   const { components, settings } = useRegister();
@@ -73,7 +73,7 @@ function FieldComponent({ field }: { field: Field }) {
         currentState: fieldsState,
       });
 
-      if (updateProps?.preventUpdate) {
+      if (updateProps && "preventUpdate" in updateProps && updateProps.preventUpdate) {
         // return to previous state if update is prevented
         setFieldsState((prevState: Record<string, unknown>) => ({
           ...prevState,

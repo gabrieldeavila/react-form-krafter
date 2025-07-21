@@ -102,6 +102,14 @@ button:focus-visible {
   margin-bottom: 0.5rem;
 }
 
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100dvw;
+  height: 100dvh;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
