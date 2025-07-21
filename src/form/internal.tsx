@@ -1,4 +1,4 @@
-import type { FormContext } from "../types";
+import type { FormContext } from "@lib/types";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { createContext, useContext } from "react";
 

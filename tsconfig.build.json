@@ -7,7 +7,10 @@
     "declarationDir": "dist/types",
     "noEmit": false,
     "outDir": "dist",
-    "composite": false
+    "composite": false,
+    "paths": {
+      "@lib/*": ["./src/*"]
+    }
   },
   "include": ["src"]
 }

@@ -11,6 +11,8 @@
     "lint": "eslint .",
     "preview": "vite preview"
   },
+  "types": "dist/types/index.d.ts",
+  "module": "dist/react-form-crafter.es.js",
   "peerDependencies": {
     "@standard-schema/spec": "^1.0.0",
     "react": "^16.8.0 || ^17 || ^18 || ^19",
