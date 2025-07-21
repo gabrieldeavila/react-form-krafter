@@ -6,8 +6,8 @@ import type {
   FormApi,
   RegisterComponent,
   RegisterFieldRenderProps,
-} from "react-form-crafter";
-import { Register, Form } from "react-form-crafter";
+} from "react-form-factory";
+import { Register, Form } from "react-form-factory";
 import z from "zod";
 import { BASIC_FIELDS_EXAMPLE } from "./fields";
 

@@ -17,8 +17,8 @@ export default defineConfig({
     emptyOutDir: true,
     lib: {
       entry: path.resolve(__dirname, "src/index.ts"),
-      name: "ReactFormCrafter",
-      fileName: (format) => `react-form-crafter.${format}.js`,
+      name: "ReactFormFactory",
+      fileName: (format) => `react-form-factory.${format}.js`,
     },
     rollupOptions: {
       external: ["react", "react-dom", "@standard-schema/spec"],

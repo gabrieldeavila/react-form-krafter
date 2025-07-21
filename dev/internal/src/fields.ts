@@ -1,4 +1,4 @@
-import type { Field } from "react-form-crafter";
+import type { Field } from "react-form-factory";
 
 export const BASIC_FIELDS_EXAMPLE: Field[] = [
   {
