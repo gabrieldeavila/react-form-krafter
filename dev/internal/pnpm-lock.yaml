@@ -18,7 +18,7 @@ importers:
         specifier: ^19.1.0
         version: 19.1.0(react@19.1.0)
       react-form-krafter:
-        specifier: link:/Users/gabrielavila/code/react-form-crafter
+        specifier: link:/Users/gabrielavila/code/react-form-krafter
         version: link:../..
       zod:
         specifier: ^4.0.5
