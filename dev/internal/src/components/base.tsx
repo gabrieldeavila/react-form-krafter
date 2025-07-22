@@ -1,4 +1,4 @@
-import type { FieldMethods, RegisterField } from "react-form-factory";
+import type { FieldMethods, RegisterField } from "react-form-krafter";
 import { memo } from "react";
 
 export type FieldBaseProps = {

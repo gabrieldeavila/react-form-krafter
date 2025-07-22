@@ -1,12 +1,12 @@
 {
-  "name": "react-form-factory",
+  "name": "react-form-krafter",
   "private": false,
   "version": "0.0.1",
   "type": "module",
   "description": "A flexible form engine for React powered by Standard Schema",
   "types": "dist/types/index.d.ts",
-  "module": "dist/react-form-factory.es.js",
-  "main": "dist/react-form-factory.umd.js",
+  "module": "dist/react-form-krafter.es.js",
+  "main": "dist/react-form-krafter.umd.js",
   "files": [
     "dist"
   ],

@@ -13,7 +13,7 @@
     "@standard-schema/spec": "^1.0.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-form-factory": "link:/Users/gabrielavila/code/react-form-crafter",
+    "react-form-krafter": "link:/Users/gabrielavila/code/react-form-crafter",
     "zod": "^4.0.5"
   },
   "devDependencies": {
