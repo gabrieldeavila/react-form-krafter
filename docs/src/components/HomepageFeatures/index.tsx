@@ -26,7 +26,7 @@ const FeatureList: FeatureItem[] = [
     png: require("@site/static/img/tree.png").default,
     description: (
       <>
-        Create highly modular form components. With React-Form-Krafter, define
+        Create highly modular form components. Define
         your elements once and use them anywhere, keeping your code clean,
         consistent, and maintainable.
       </>
