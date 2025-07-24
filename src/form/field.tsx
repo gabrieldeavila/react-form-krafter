@@ -73,7 +73,11 @@ function FieldComponent({ field }: { field: Field }) {
         currentState: fieldsState,
       });
 
-      if (updateProps && "preventUpdate" in updateProps && updateProps.preventUpdate) {
+      if (
+        updateProps &&
+        "preventUpdate" in updateProps &&
+        updateProps.preventUpdate
+      ) {
         // return to previous state if update is prevented
         setFieldsState((prevState: Record<string, unknown>) => ({
           ...prevState,
@@ -147,6 +151,15 @@ function FieldComponent({ field }: { field: Field }) {
     ]
   );
 
+  const handleFocus = useCallback(() => {
+    setFieldsInfo((prevInfo) => ({
+      ...prevInfo,
+      focused: prevInfo.focused.includes(field.name)
+        ? prevInfo.focused
+        : [...(prevInfo.focused || []), field.name],
+    }));
+  }, [field.name, setFieldsInfo]);
+
   const value = useMemo(
     () => fieldsState[field.name],
     [fieldsState, field.name]
@@ -218,7 +231,7 @@ function FieldComponent({ field }: { field: Field }) {
       {Component ? (
         <Component
           field={fieldData}
-          methods={{ onChange: handleChange, onBlur: handleBlur }}
+          methods={{ onChange: handleChange, onBlur: handleBlur, onFocus: handleFocus }}
         />
       ) : (
         "Field not found"

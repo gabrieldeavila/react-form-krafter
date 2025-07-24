@@ -76,6 +76,7 @@ const FieldBase = memo(({ methods, field, type, onFieldChange }) => {
             ? field.value
             : ""
         }
+        onFocus={methods.onFocus}
         defaultValue={
           type === "number"
             ? Number(field.initialValue)
@@ -227,4 +228,5 @@ Also, you are able to access the current state of the form through `formValue.fi
 If you add a child component to the form, you will be able to access the same values provided by the `Form` component, allowing you to create more complex interactions or display additional information based on the form state.
 
 ## Learn more
+
 To dive deeper into `react-form-krafter`, read the next tutorial.

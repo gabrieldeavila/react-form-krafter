@@ -27,6 +27,7 @@ const FieldBase = memo(
           name={field.name}
           required={field.required}
           disabled={field.isDisabled}
+          onFocus={methods.onFocus}
           value={
             type === "number"
               ? Number(field.value)

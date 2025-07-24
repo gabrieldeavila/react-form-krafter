@@ -40,6 +40,7 @@ const FieldBase = memo(
               : String(field.initialValue)
           }
           onChange={(e) => methods.onChange(onFieldChange(e.target.value))}
+          onFocus={methods.onFocus}
           onBlur={methods.onBlur}
         />
 
