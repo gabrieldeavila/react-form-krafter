@@ -23,6 +23,7 @@ const schema = z.object({
   schema={schema}
   formApi={formApi}
   fields={BASIC_FIELDS_EXAMPLE}
+  initialDisabledFields={["age"]} // Example of setting initial disabled fields
   onSubmit={async (values) => {
     // Handle form submission
   }}
@@ -55,13 +56,14 @@ This significantly reduces boilerplate and speeds up development.
 
 You can also include additional components inside the form — such as a submit button, reset button, or custom actions — by placing them alongside the `Form` component.
 
-## Properties
+## Base Properties
 - **`formClassName`**: A custom class name for the form element.
 - **`schema`**: A validation schema (e.g., using `zod`) to validate the form data. It's not mandatory, but highly recommended.
 - **`formApi`**: A reference to the form API, allowing you to programmatically control the form (e.g., reset, submit).
 - **`fields`**: An array of registered fields to be rendered in the form.
 - **`onSubmit`**: A callback function that is called when the form is submitted.
 - **`children`**: A function that receives the current form state and allows you to render additional components or information based on the form's state.
+- **`initialDisabledFields`**: An array of field names that should be disabled when the form is first rendered. This allows you to control which fields are editable at the start.
 
 ### Form API Methods
 
@@ -87,6 +89,7 @@ You can also include additional components inside the form — such as a submit 
 | **`setFieldsInfo(fieldsInfo)`**        | Updates metadata for all fields at once. |
 | **`updateFieldsState(fieldsState)`**   | Updates the state of multiple fields. Recommended for batch updates (e.g., value, touched, error, etc.). |
 | **`setFieldsState(fieldsState)`**      | Directly sets the full state of all fields. Not recommended — prefer `setFieldValue` or `updateFieldsState`. |
+
 ### useForm hook
 It shares the same values as the `FormApi` but can only be used inside the `Form` component.
 

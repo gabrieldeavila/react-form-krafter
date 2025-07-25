@@ -49,6 +49,7 @@ export type FormUserProps<T, G extends StandardSchemaV1> = {
 export type FormUserConfigProps<T> = Partial<{
   formApi: React.RefObject<FormApi<T> | null>;
   formClassName?: string;
+  initialDisabledFields?: (keyof T)[];
   children: React.ReactNode | null | ((formApi: FormApi<T>) => React.ReactNode);
 }>;
 

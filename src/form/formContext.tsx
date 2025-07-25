@@ -20,6 +20,7 @@ import { FormContextCreate } from "./internal";
 const Form = <T, G extends StandardSchemaV1>({
   formApi,
   formClassName,
+  initialDisabledFields,
   ...props
 }: FormUserConfigProps<T> & FormUserProps<T, G>) => {
   const initialState: T = useMemo(
@@ -41,7 +42,7 @@ const Form = <T, G extends StandardSchemaV1>({
     blurred: [],
     initialState,
     errors: {} as Record<keyof T, string>,
-    disabled: [],
+    disabled: initialDisabledFields ?? [] as (keyof T)[],
     previousState: initialState,
   });
 
