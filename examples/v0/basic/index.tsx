@@ -63,7 +63,7 @@ function ExampleV0Basic() {
             <div>
               <div className="flex gap-2">
                 <button type="submit">Submit</button>
-                <button type="button" onClick={() => formApi.current?.reset()}>
+                <button type="button" onClick={() => formValue.reset()}>
                   Reset
                 </button>
               </div>

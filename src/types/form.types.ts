@@ -15,6 +15,7 @@ export type FormApi<T> = {
   setFieldValue: (fieldName: keyof T, value: T[keyof T]) => void;
   fieldsState: T;
   isSubmitting: boolean;
+  didSubmitOnce: boolean;
   fieldsInfo: FieldsInfo<T>;
   onFormSubmit: (e: React.FormEvent<HTMLFormElement>) => void | Promise<void>;
 };

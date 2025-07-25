@@ -226,17 +226,20 @@ function FieldComponent({ field }: { field: Field }) {
     ]
   );
 
+  if (!Component) {
+    console.error(`Component for field type "${field.type}" not found.`);
+    return null;
+  }
+
   return (
-    <div>
-      {Component ? (
-        <Component
-          field={fieldData}
-          methods={{ onChange: handleChange, onBlur: handleBlur, onFocus: handleFocus }}
-        />
-      ) : (
-        "Field not found"
-      )}
-    </div>
+    <Component
+      field={fieldData}
+      methods={{
+        onChange: handleChange,
+        onBlur: handleBlur,
+        onFocus: handleFocus,
+      }}
+    />
   );
 }
 

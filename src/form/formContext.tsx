@@ -201,8 +201,10 @@ const Form = <T, G extends StandardSchemaV1>({
       onFormSubmit,
       isSubmitting,
       setFieldValue,
+      didSubmitOnce,
     }),
     [
+      didSubmitOnce,
       fieldsInfo,
       fieldsState,
       isSubmitting,
