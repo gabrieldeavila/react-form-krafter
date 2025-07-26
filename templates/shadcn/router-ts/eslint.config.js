@@ -10,10 +10,10 @@ export default tseslint.config([
   {
     files: ["**/*.{ts,tsx}"],
     extends: [
-      // js.configs.recommended,
-      // tseslint.configs.recommended,
-      // reactHooks.configs["recommended-latest"],
-      // reactRefresh.configs.vite,
+      js.configs.recommended,
+      tseslint.configs.recommended,
+      reactHooks.configs["recommended-latest"],
+      reactRefresh.configs.vite,
     ],
     rules: {
       "react-hooks/rules-of-hooks": "error",
