@@ -14,9 +14,6 @@ importers:
       react:
         specifier: ^16.8.0 || ^17 || ^18 || ^19
         version: 19.1.0
-      react-dom:
-        specifier: ^16.8.0 || ^17 || ^18 || ^19
-        version: 19.1.0(react@19.1.0)
     devDependencies:
       '@eslint/js':
         specifier: ^9.29.0
@@ -48,6 +45,9 @@ importers:
       path:
         specifier: ^0.12.7
         version: 0.12.7
+      react-dom:
+        specifier: ^16.8.0 || ^17 || ^18 || ^19
+        version: 19.1.0(react@19.1.0)
       typescript:
         specifier: ~5.8.3
         version: 5.8.3
