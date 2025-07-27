@@ -1,0 +1,62 @@
+import { Form, type Field } from "react-form-krafter";
+import KrafterRegister from "~/components/internal/krafter/register";
+import { z } from "zod";
+
+const schema = z.object({
+  name: z.string().min(3, "Name must be at least 3 characters long"),
+  // surname: z.string().min(3, "Surname must be at least 3 characters long"),
+  age: z
+    .number()
+    .min(18, "Age must be at least 18")
+    .max(100, "Age must be less than 100"),
+  birthDate: z
+    .date()
+    .refine(
+      (date) => date instanceof Date && !isNaN(date.getTime()),
+      "Invalid date"
+    ),
+  // about: z.string().max(500, "About must be less than 500 characters"),
+});
+
+type Schema = typeof schema;
+type Validator = z.infer<Schema>;
+
+const fields: Field[] = [
+  {
+    name: "name",
+    label: "Name",
+    placeholder: "Enter a name",
+    required: true,
+    disabled: false,
+    type: "text",
+  },
+  {
+    name: "age",
+    label: "Age",
+    placeholder: "Enter age",
+    required: true,
+    disabled: false,
+    type: "number",
+  },
+  {
+    name: "birthDate",
+    label: "Birth Date",
+    required: true,
+    disabled: false,
+    type: "date",
+  },
+];
+
+function FormFeatures() {
+  return (
+    <KrafterRegister>
+      <Form<Validator, Schema>
+        formClassName="grid grid-cols-4 gap-4"
+        fields={fields}
+        schema={schema}
+      />
+    </KrafterRegister>
+  );
+}
+
+export default FormFeatures;

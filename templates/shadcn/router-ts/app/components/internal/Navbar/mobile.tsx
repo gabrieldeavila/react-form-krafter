@@ -9,7 +9,8 @@ function MobileNav({ navbarBounds }: { navbarBounds: DOMRect | null }) {
       }}
       className={cn(
         "flex justify-center lg:hidden",
-        "absolute bottom-0 left-0 right-0 z-50"
+        "absolute bottom-0 left-0 right-0 z-100",
+        "bg-background",
       )}
     >
       <div className="container flex flex-col p-4 shadow-lg">
