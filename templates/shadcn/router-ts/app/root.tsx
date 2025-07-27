@@ -9,6 +9,8 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import { Footer } from "./components/internal/footer/footer";
+import Navbar from "./components/internal/navbar/navbar";
 import { ThemeProvider } from "./components/theme-provider";
 
 export const links: Route.LinksFunction = () => [
@@ -34,8 +36,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <Meta />
           <Links />
         </head>
-        <body>
-          {children}
+        <body className="flex min-h-screen flex-col">
+          {/* <KrafterRegister> */}
+          <Navbar />
+          <main className="flex-1 px-4">{children}</main>
+          <Footer />
+          {/* </KrafterRegister> */}
           <ScrollRestoration />
           <Scripts />
         </body>
