@@ -25,15 +25,13 @@ function FieldComponent({ field }: { field: Field }) {
     [components, field.type]
   );
 
-  const handleBlur = useCallback(
-    async (e?: React.FocusEvent<unknown>) => {
+  const handleFieldUpdate = useCallback(
+    async ({ isBlur }: { isBlur: boolean }) => {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
         timerRef.current = null;
       }
-      const wasBlurEvent = e?.type === "blur";
-
-      if (wasBlurEvent) {
+      if (isBlur) {
         setFieldsInfo((prevInfo) => ({
           ...prevInfo,
           blurred: prevInfo.blurred.includes(field.name)
@@ -96,16 +94,20 @@ function FieldComponent({ field }: { field: Field }) {
       }));
     },
     [
-      schema,
-      onUpdate,
-      field.name,
       field.initialValue,
-      fieldsState,
+      field.name,
       fieldsInfo.previousState,
+      fieldsState,
+      onUpdate,
+      schema,
       setFieldsInfo,
       setFieldsState,
     ]
   );
+
+  const handleBlur = useCallback(async () => {
+    handleFieldUpdate({ isBlur: true });
+  }, [handleFieldUpdate]);
 
   const handleChange = useCallback(
     (value: unknown) => {
@@ -134,7 +136,9 @@ function FieldComponent({ field }: { field: Field }) {
         }
 
         timerRef.current = setTimeout(async () => {
-          await handleBlur();
+          await handleFieldUpdate({
+            isBlur: false,
+          });
           timerRef.current = null;
         }, settings.updateDebounce);
       }
@@ -143,7 +147,7 @@ function FieldComponent({ field }: { field: Field }) {
       field.name,
       fieldsInfo.previousState,
       fieldsState,
-      handleBlur,
+      handleFieldUpdate,
       onChange,
       setFieldsInfo,
       setFieldsState,
@@ -227,7 +231,7 @@ function FieldComponent({ field }: { field: Field }) {
   );
 
   if (!Component) {
-    console.error(`Component for field type "${field.type}" not found.`);
+    console.error(`Component for field type "${field.type}" was not found.`);
     return null;
   }
 
