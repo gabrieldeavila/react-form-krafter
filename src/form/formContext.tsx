@@ -21,6 +21,7 @@ const Form = <T, G extends StandardSchemaV1>({
   formApi,
   formClassName,
   initialDisabledFields,
+  loaderFallback,
   ...props
 }: FormUserConfigProps<T> & FormUserProps<T, G>) => {
   const initialState: T = useMemo(
@@ -42,7 +43,7 @@ const Form = <T, G extends StandardSchemaV1>({
     blurred: [],
     initialState,
     errors: {} as Record<keyof T, string>,
-    disabled: initialDisabledFields ?? [] as (keyof T)[],
+    disabled: initialDisabledFields ?? ([] as (keyof T)[]),
     previousState: initialState,
   });
 
@@ -218,6 +219,13 @@ const Form = <T, G extends StandardSchemaV1>({
     ]
   );
 
+  const LoaderFallback = useCallback(() => {
+    if (loaderFallback) {
+      return loaderFallback;
+    }
+    return <div>...</div>;
+  }, [loaderFallback]);
+
   useImperativeHandle(formApi, () => formApiValue, [formApiValue]);
 
   return (
@@ -226,7 +234,7 @@ const Form = <T, G extends StandardSchemaV1>({
         formValue as FormContext<unknown, StandardSchemaV1<unknown, unknown>>
       }
     >
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<LoaderFallback />}>
         <form className={formClassName} onSubmit={onFormSubmit}>
           {props.fields?.map((field, index) => {
             return <Field key={index} field={field} />;

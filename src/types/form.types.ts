@@ -51,6 +51,7 @@ export type FormUserConfigProps<T> = Partial<{
   formClassName?: string;
   initialDisabledFields?: (keyof T)[];
   children: React.ReactNode | null | ((formApi: FormApi<T>) => React.ReactNode);
+  loaderFallback?: React.ReactNode;
 }>;
 
 export type FormContext<T, G extends StandardSchemaV1> = FormUserProps<T, G> & {
