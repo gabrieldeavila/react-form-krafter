@@ -54,6 +54,17 @@ import { Register } from "react-form-krafter";
 
 const updateDebounce = 300;
 
+const COMPONENTS: RegisterComponent<FieldsValue>[] = [
+  {
+    type: "text",
+    render: lazy(() => import("./components/text")),
+  },
+  {
+    type: "number",
+    render: lazy(() => import("./components/number")),
+  },
+];
+
 return (
   <Register components={COMPONENTS} settings={{ updateDebounce }}>
     {/* Your form components */}
