@@ -10,6 +10,8 @@ const FieldNumber: FC<RegisterFieldRenderProps<number>> = memo(
         type="number"
         onFieldChange={(value) => {
           const numValue = Number(value);
+          console.log(isNaN(numValue) ? 0 : numValue ?? 0);
+
           return isNaN(numValue) ? 0 : numValue ?? 0; // Ensure valid number
         }}
       />

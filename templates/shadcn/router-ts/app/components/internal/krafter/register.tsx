@@ -3,6 +3,7 @@ import {
   Register,
   type RegisterComponent,
   type RegisterFieldRenderProps,
+  type RegisterSettings,
 } from "react-form-krafter";
 
 type FieldsValue = number | string | Date;
@@ -28,8 +29,18 @@ const COMPONENTS: RegisterComponent<FieldsValue>[] = [
   },
 ];
 
+const settings: RegisterSettings = {
+  labels: {
+    required: "This field is required",
+  },
+};
+
 function KrafterRegister({ children }: { children: React.ReactNode }) {
-  return <Register<FieldsValue> components={COMPONENTS}>{children}</Register>;
+  return (
+    <Register<FieldsValue> components={COMPONENTS} settings={settings}>
+      {children}
+    </Register>
+  );
 }
 
 export default KrafterRegister;

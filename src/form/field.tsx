@@ -58,7 +58,7 @@ function FieldComponent({ field }: { field: Field }) {
 
       const fieldValue = currentFieldsState[field.name];
 
-      if (!fieldValue && field.required) {
+      if (fieldValue == null && field.required) {
         setFieldsInfo((prevInfo) => ({
           ...prevInfo,
           errors: {

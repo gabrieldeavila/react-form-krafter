@@ -14,7 +14,9 @@ const schema = z.object({
     .refine(
       (date) => date instanceof Date && !isNaN(date.getTime()),
       "Invalid date"
-    ),
+    )
+    // .max(new Date(), "Date cannot be in the future")
+    .refine((date) => date <= new Date(), "Date cannot be in the future"),
   // about: z.string().max(500, "About must be less than 500 characters"),
 });
 
@@ -54,7 +56,13 @@ function FormFeatures() {
         formClassName="grid grid-cols-4 gap-4"
         fields={fields}
         schema={schema}
-      />
+      >
+        {(values) => {
+          console.log("Form values:", values.fieldsState.birthDate?.toDateString());
+
+          return null;
+        }}
+      </Form>
     </KrafterRegister>
   );
 }
