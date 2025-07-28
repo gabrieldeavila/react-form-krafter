@@ -137,10 +137,14 @@ const Form = <T, G extends StandardSchemaV1>({
         setDidSubmitOnce(true);
 
         if (props.onSubmit) {
+          const someError = Object.keys(fieldsInfo.errors).some(
+            (key) => fieldsInfo.errors[key as keyof T] != null
+          );
+
           await props.onSubmit({
             state: fieldsState,
             errors: fieldsInfo.errors,
-            success: Object.keys(fieldsInfo.errors).length === 0,
+            success: !someError,
           });
         }
       } finally {

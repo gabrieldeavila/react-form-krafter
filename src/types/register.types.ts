@@ -27,6 +27,9 @@ export type RegisterComponent<T> = {
 
 export type RegisterSettings = Partial<{
   updateDebounce: number; // Debounce time for updates in milliseconds
+  labels: Partial<{
+    required: string; // Label for required fields
+  }>;
 }>;
 
 export type RegisterContext<T> = {

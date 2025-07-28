@@ -1,6 +1,6 @@
-import { useCallback, useMemo, useRef } from "react";
+import { memo, useCallback, useMemo, useRef } from "react";
 import { useRegister } from "../register/registerContext";
-import type { FieldsInfo, RegisterField } from "../types";
+import type { FieldsInfo, RegisterComponent, RegisterField } from "../types";
 import type { Field } from "../types/field.types";
 import { standardValidate } from "../validation/standard";
 import { useInternalForm } from "./internal";
@@ -39,17 +39,55 @@ function FieldComponent({ field }: { field: Field }) {
             : [...(prevInfo.blurred || []), field.name],
         }));
       }
+      const currentFieldsState: Record<string, unknown> = await new Promise(
+        (resolve) => {
+          setFieldsState((prevState: Record<string, unknown>) => {
+            resolve(prevState);
+            return prevState;
+          });
+        }
+      );
 
-      if (schema) {
-        const validationResult = await standardValidate(schema, fieldsState);
+      const currentFieldsInfo: FieldsInfo<Record<string, unknown>> =
+        await new Promise((resolve) => {
+          setFieldsInfo((prevInfo: FieldsInfo<Record<string, unknown>>) => {
+            resolve(prevInfo);
+            return prevInfo;
+          });
+        });
+
+      const fieldValue = currentFieldsState[field.name];
+
+      if (!fieldValue && field.required) {
+        setFieldsInfo((prevInfo) => ({
+          ...prevInfo,
+          errors: {
+            ...prevInfo.errors,
+            [field.name]: settings?.labels?.required || "REQUIRED_FIELD_ERROR",
+          },
+        }));
+      } else if (schema) {
+        const validationResult = await standardValidate(
+          schema,
+          currentFieldsState
+        );
 
         if (validationResult instanceof Array) {
           const issues = validationResult.reduce(
-            (acc, issue) => ({
-              ...acc,
-              [issue.path.join(".")]: issue.message,
-            }),
-            {}
+            (acc, issue) => {
+              const name = issue.path.join(".");
+
+              if (name !== field.name) {
+                return acc;
+              }
+
+              if (fieldValue) {
+                acc[name] = issue.message;
+              }
+
+              return acc;
+            },
+            { ...currentFieldsInfo.errors, [field.name]: null }
           );
 
           setFieldsInfo((prevInfo) => ({
@@ -66,9 +104,9 @@ function FieldComponent({ field }: { field: Field }) {
 
       const updateProps = await onUpdate?.({
         fieldName: field.name,
-        value: fieldsState[field.name],
-        previousState: fieldsInfo.previousState,
-        currentState: fieldsState,
+        value: fieldValue,
+        previousState: currentFieldsInfo.previousState,
+        currentState: currentFieldsState,
       });
 
       if (
@@ -76,11 +114,11 @@ function FieldComponent({ field }: { field: Field }) {
         "preventUpdate" in updateProps &&
         updateProps.preventUpdate
       ) {
-        // return to previous state if update is prevented
+        // return to the previous state if update is prevented
         setFieldsState((prevState: Record<string, unknown>) => ({
           ...prevState,
           [field.name]:
-            fieldsInfo.previousState[field.name] || field.initialValue, // Fallback to initial value if not set
+            currentFieldsInfo.previousState[field.name] || field.initialValue, // Fallback to initial value if not set
         }));
         return;
       }
@@ -89,19 +127,19 @@ function FieldComponent({ field }: { field: Field }) {
         ...prevInfo,
         previousState: {
           ...prevInfo.previousState,
-          [field.name]: fieldsState[field.name],
+          [field.name]: fieldValue,
         },
       }));
     },
     [
       field.initialValue,
       field.name,
-      fieldsInfo.previousState,
-      fieldsState,
+      field.required,
       onUpdate,
       schema,
       setFieldsInfo,
       setFieldsState,
+      settings?.labels?.required,
     ]
   );
 
@@ -230,21 +268,41 @@ function FieldComponent({ field }: { field: Field }) {
     ]
   );
 
+  const methods = useMemo(
+    () => ({
+      onChange: handleChange,
+      onBlur: handleBlur,
+      onFocus: handleFocus,
+    }),
+    [handleChange, handleBlur, handleFocus]
+  );
+
   if (!Component) {
     console.error(`Component for field type "${field.type}" was not found.`);
     return null;
   }
 
   return (
-    <Component
-      field={fieldData}
-      methods={{
-        onChange: handleChange,
-        onBlur: handleBlur,
-        onFocus: handleFocus,
-      }}
-    />
+    <FieldWrapper Component={Component} field={fieldData} methods={methods} />
   );
 }
+
+const FieldWrapper = memo(
+  ({
+    Component,
+    field,
+    methods,
+  }: {
+    Component: RegisterComponent<unknown>["render"];
+    field: RegisterField<unknown>;
+    methods: {
+      onChange: (value: unknown) => void;
+      onBlur: () => void;
+      onFocus: () => void;
+    };
+  }) => {
+    return <Component field={field} methods={methods} />;
+  }
+);
 
 export default FieldComponent;
