@@ -17,7 +17,7 @@ export function DatePicker({
   onChange,
   onFocus,
   onBlur,
-  date 
+  date,
 }: {
   date: Date | undefined;
   id: string;
@@ -54,10 +54,10 @@ export function DatePicker({
           mode="single"
           selected={date}
           captionLayout="dropdown"
-          onSelect={(date) => {
-            onChange(date);
+          onSelect={async (date) => {
+            await onChange(date);
             setOpen(false);
-            console.log(date)
+
             onBlur?.();
           }}
         />

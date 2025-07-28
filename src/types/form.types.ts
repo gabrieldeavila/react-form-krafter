@@ -71,7 +71,7 @@ export type FormContext<T, G extends StandardSchemaV1> = FormUserProps<T, G> & {
 };
 
 export type FieldMethods = {
-  onChange: (value: unknown) => void;
+  onChange: (value: unknown) => Promise<void>;
   onBlur: () => void;
   onFocus: () => void;
 };

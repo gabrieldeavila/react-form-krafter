@@ -31,6 +31,7 @@ function FieldComponent({ field }: { field: Field }) {
         clearTimeout(timerRef.current);
         timerRef.current = null;
       }
+
       if (isBlur) {
         setFieldsInfo((prevInfo) => ({
           ...prevInfo,
@@ -39,6 +40,7 @@ function FieldComponent({ field }: { field: Field }) {
             : [...(prevInfo.blurred || []), field.name],
         }));
       }
+
       const currentFieldsState: Record<string, unknown> = await new Promise(
         (resolve) => {
           setFieldsState((prevState: Record<string, unknown>) => {
@@ -58,7 +60,7 @@ function FieldComponent({ field }: { field: Field }) {
 
       const fieldValue = currentFieldsState[field.name];
 
-      if (fieldValue == null && field.required) {
+      if ((fieldValue == null || fieldValue == "") && field.required) {
         setFieldsInfo((prevInfo) => ({
           ...prevInfo,
           errors: {
@@ -73,6 +75,8 @@ function FieldComponent({ field }: { field: Field }) {
         );
 
         if (validationResult instanceof Array) {
+          console.log(currentFieldsState, fieldValue, 'gg');
+
           const issues = validationResult.reduce(
             (acc, issue) => {
               const name = issue.path.join(".");
@@ -81,7 +85,8 @@ function FieldComponent({ field }: { field: Field }) {
                 return acc;
               }
 
-              if (fieldValue) {
+
+              if (fieldValue != null) {
                 acc[name] = issue.message;
               }
 
@@ -315,7 +320,7 @@ const FieldWrapper = memo(
     Component: RegisterComponent<unknown>["render"];
     field: RegisterField<unknown>;
     methods: {
-      onChange: (value: unknown) => void;
+      onChange: (value: unknown) => Promise<void>;
       onBlur: () => void;
       onFocus: () => void;
     };
