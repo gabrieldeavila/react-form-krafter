@@ -148,13 +148,30 @@ function FieldComponent({ field }: { field: Field }) {
   }, [handleFieldUpdate]);
 
   const handleChange = useCallback(
-    (value: unknown) => {
+    async (value: unknown) => {
       setFieldsInfo((prevInfo) => ({
         ...prevInfo,
         dirty: prevInfo.dirty.includes(field.name)
           ? prevInfo.dirty
           : [...(prevInfo.dirty || []), field.name],
       }));
+
+      const currentFieldsInfo: FieldsInfo<Record<string, unknown>> =
+        await new Promise((resolve) => {
+          setFieldsInfo((prevInfo: FieldsInfo<Record<string, unknown>>) => {
+            resolve(prevInfo);
+            return prevInfo;
+          });
+        });
+
+      const currentFieldsState: Record<string, unknown> = await new Promise(
+        (resolve) => {
+          setFieldsState((prevState: Record<string, unknown>) => {
+            resolve(prevState);
+            return prevState;
+          });
+        }
+      );
 
       setFieldsState((prevState: Record<string, unknown>) => ({
         ...prevState,
@@ -164,8 +181,8 @@ function FieldComponent({ field }: { field: Field }) {
       onChange?.({
         fieldName: field.name,
         value,
-        previousState: fieldsInfo.previousState,
-        currentState: fieldsState,
+        previousState: currentFieldsInfo.previousState,
+        currentState: currentFieldsState,
       });
 
       if (settings?.updateDebounce) {
@@ -183,8 +200,6 @@ function FieldComponent({ field }: { field: Field }) {
     },
     [
       field.name,
-      fieldsInfo.previousState,
-      fieldsState,
       handleFieldUpdate,
       onChange,
       setFieldsInfo,
@@ -239,6 +254,10 @@ function FieldComponent({ field }: { field: Field }) {
     [fieldsInfo, field.name]
   );
 
+  const error = useMemo(() => {
+    return fieldsInfo.errors?.[field.name] || null;
+  }, [fieldsInfo.errors, field.name]);
+
   const fieldData = useMemo<RegisterField<unknown>>(
     () => ({
       ...field,
@@ -250,7 +269,7 @@ function FieldComponent({ field }: { field: Field }) {
       isPristine,
       isBlurred,
       isDisabled: isDisabled || field.disabled || false,
-      error: fieldsInfo.errors?.[field.name] || null,
+      error: error,
       isErrorVisible: isBlurred || didSubmitOnce,
     }),
     [
@@ -263,7 +282,7 @@ function FieldComponent({ field }: { field: Field }) {
       isPristine,
       isBlurred,
       isDisabled,
-      fieldsInfo.errors,
+      error,
       didSubmitOnce,
     ]
   );

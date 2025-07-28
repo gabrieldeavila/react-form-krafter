@@ -34,5 +34,5 @@ export type RegisterSettings = Partial<{
 
 export type RegisterContext<T> = {
   components: RegisterComponent<T>[];
-  settings?: RegisterSettings;
+  settings?: RegisterSettings | null;
 };
