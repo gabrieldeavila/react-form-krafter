@@ -27,6 +27,12 @@ const COMPONENTS: RegisterComponent<FieldsValue>[] = [
       RegisterFieldRenderProps<FieldsValue>
     >,
   },
+  {
+    type: "select",
+    render: lazy(() => import("./fields/select")) as ComponentType<
+      RegisterFieldRenderProps<FieldsValue>
+    >,
+  },
 ];
 
 const settings: RegisterSettings = {

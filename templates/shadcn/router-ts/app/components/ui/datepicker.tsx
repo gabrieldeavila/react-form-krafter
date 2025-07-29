@@ -38,12 +38,12 @@ export function DatePicker({
 
   return (
     <Popover open={open && !disabled} onOpenChange={handleOpenChange}>
-      <PopoverTrigger asChild>
+      <PopoverTrigger asChild data-placeholder={date ? undefined : ""}>
         <Button
           variant="outline"
           disabled={disabled}
           id={id}
-          className="justify-between font-normal"
+          className="data-[placeholder]:text-muted-foreground justify-between font-normal"
         >
           {date ? date.toLocaleDateString() : "Select date"}
           <ChevronDownIcon />

@@ -1,6 +1,7 @@
 import { Form, type Field } from "react-form-krafter";
 import KrafterRegister from "~/components/internal/krafter/register";
 import { z } from "zod";
+import { cn } from "~/lib/utils";
 
 const schema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters long"),
@@ -47,18 +48,40 @@ const fields: Field[] = [
     disabled: false,
     type: "date",
   },
+  {
+    name: "favoriteLanguage",
+    label: "Favorite Language",
+    placeholder: "Select your favorite",
+    required: true,
+    disabled: false,
+    type: "select",
+    options: [
+      { value: "javascript", label: "JavaScript" },
+      { value: "typescript", label: "TypeScript" },
+      { value: "python", label: "Python" },
+      { value: "java", label: "Java" },
+      { value: "csharp", label: "C#" },
+      { value: "ruby", label: "Ruby" },
+    ],
+  },
 ];
 
 function FormFeatures() {
   return (
     <KrafterRegister>
       <Form<Validator, Schema>
-        formClassName="grid grid-cols-4 gap-4"
+        formClassName={cn(
+          "grid gap-4",
+          "grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
+        )}
         fields={fields}
         schema={schema}
       >
         {(values) => {
-          console.log("Form values:", values.fieldsState.birthDate?.toDateString());
+          console.log(
+            "Form values:",
+            values.fieldsState.birthDate?.toDateString()
+          );
 
           return null;
         }}

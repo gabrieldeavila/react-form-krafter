@@ -18,6 +18,8 @@ function FieldComponent({ field }: { field: Field }) {
     didSubmitOnce,
   } = useInternalForm();
 
+  const promiseChange = useRef<Promise<void> | null>(null);
+
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const Component = useMemo(
@@ -27,6 +29,8 @@ function FieldComponent({ field }: { field: Field }) {
 
   const handleFieldUpdate = useCallback(
     async ({ isBlur }: { isBlur: boolean }) => {
+      await promiseChange.current;
+
       if (timerRef.current) {
         clearTimeout(timerRef.current);
         timerRef.current = null;
@@ -75,7 +79,7 @@ function FieldComponent({ field }: { field: Field }) {
         );
 
         if (validationResult instanceof Array) {
-          console.log(currentFieldsState, fieldValue, 'gg');
+          console.log(currentFieldsState, fieldValue, "gg");
 
           const issues = validationResult.reduce(
             (acc, issue) => {
@@ -84,7 +88,6 @@ function FieldComponent({ field }: { field: Field }) {
               if (name !== field.name) {
                 return acc;
               }
-
 
               if (fieldValue != null) {
                 acc[name] = issue.message;
@@ -148,59 +151,71 @@ function FieldComponent({ field }: { field: Field }) {
     ]
   );
 
-  const handleBlur = useCallback(async () => {
+  const handleBlur = useCallback(() => {
     handleFieldUpdate({ isBlur: true });
   }, [handleFieldUpdate]);
 
   const handleChange = useCallback(
     async (value: unknown) => {
-      setFieldsInfo((prevInfo) => ({
-        ...prevInfo,
-        dirty: prevInfo.dirty.includes(field.name)
-          ? prevInfo.dirty
-          : [...(prevInfo.dirty || []), field.name],
-      }));
-
-      const currentFieldsInfo: FieldsInfo<Record<string, unknown>> =
-        await new Promise((resolve) => {
-          setFieldsInfo((prevInfo: FieldsInfo<Record<string, unknown>>) => {
-            resolve(prevInfo);
-            return prevInfo;
-          });
-        });
-
-      const currentFieldsState: Record<string, unknown> = await new Promise(
-        (resolve) => {
-          setFieldsState((prevState: Record<string, unknown>) => {
-            resolve(prevState);
-            return prevState;
-          });
-        }
-      );
-
-      setFieldsState((prevState: Record<string, unknown>) => ({
-        ...prevState,
-        [field.name]: value,
-      }));
-
-      onChange?.({
-        fieldName: field.name,
-        value,
-        previousState: currentFieldsInfo.previousState,
-        currentState: currentFieldsState,
+      let handleResolvePromise: () => void = () => {};
+      promiseChange.current = new Promise((resolve) => {
+        handleResolvePromise = resolve;
       });
 
-      if (settings?.updateDebounce) {
-        if (timerRef.current) {
-          clearTimeout(timerRef.current);
-        }
+      try {
+        setFieldsInfo((prevInfo) => ({
+          ...prevInfo,
+          dirty: prevInfo.dirty.includes(field.name)
+            ? prevInfo.dirty
+            : [...(prevInfo.dirty || []), field.name],
+        }));
 
-        timerRef.current = setTimeout(async () => {
-          await handleFieldUpdate({
-            isBlur: false,
+        const currentFieldsInfo: FieldsInfo<Record<string, unknown>> =
+          await new Promise((resolve) => {
+            setFieldsInfo((prevInfo: FieldsInfo<Record<string, unknown>>) => {
+              resolve(prevInfo);
+              return prevInfo;
+            });
           });
-          timerRef.current = null;
-        }, settings.updateDebounce);
+
+        const currentFieldsState: Record<string, unknown> = await new Promise(
+          (resolve) => {
+            setFieldsState((prevState: Record<string, unknown>) => {
+              resolve(prevState);
+              return prevState;
+            });
+          }
+        );
+
+        setFieldsState((prevState: Record<string, unknown>) => ({
+          ...prevState,
+          [field.name]: value,
+        }));
+
+        onChange?.({
+          fieldName: field.name,
+          value,
+          previousState: currentFieldsInfo.previousState,
+          currentState: currentFieldsState,
+        });
+
+        if (settings?.updateDebounce) {
+          if (timerRef.current) {
+            clearTimeout(timerRef.current);
+          }
+
+          timerRef.current = setTimeout(async () => {
+            await handleFieldUpdate({
+              isBlur: false,
+            });
+            timerRef.current = null;
+          }, settings.updateDebounce);
+        }
+      } finally {
+        if (promiseChange.current) {
+          promiseChange.current = null;
+          handleResolvePromise();
+        }
       }
     },
     [
