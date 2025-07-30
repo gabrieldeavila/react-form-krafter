@@ -3,7 +3,7 @@ import {
   Form,
   useFieldsErrors,
   useFieldsState,
-  type Field
+  type Field,
 } from "react-form-krafter";
 import { z } from "zod";
 import KrafterRegister from "~/components/internal/krafter/register";
@@ -107,9 +107,10 @@ function FormFeatures() {
         schema={schema}
         onSubmit={onSubmit}
       >
+        <Submit />
+
         <FormInfo />
         <FormErrors />
-        <Submit />
       </Form>
     </KrafterRegister>
   );

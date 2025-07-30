@@ -35,7 +35,7 @@ function Navbar() {
     <>
       <header
         ref={handleNavbarRef}
-        className="w-full px-2 border-b flex items-center justify-center"
+        className="w-full px-2 border-b flex items-center justify-center fixed top-0 z-50 bg-background"
       >
         <div className="container flex items-center justify-between py-4">
           <div className="flex items-center gap-6">
