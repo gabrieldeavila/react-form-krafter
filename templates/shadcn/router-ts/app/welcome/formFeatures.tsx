@@ -1,6 +1,13 @@
-import { Form, type Field } from "react-form-krafter";
-import KrafterRegister from "~/components/internal/krafter/register";
+import { memo, useCallback } from "react";
+import {
+  Form,
+  useFieldsErrors,
+  useFieldsState,
+  type Field
+} from "react-form-krafter";
 import { z } from "zod";
+import KrafterRegister from "~/components/internal/krafter/register";
+import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 
 const schema = z.object({
@@ -67,6 +74,28 @@ const fields: Field[] = [
 ];
 
 function FormFeatures() {
+  const onSubmit = useCallback(
+    ({
+      errors,
+      state,
+      success,
+    }: {
+      state: Validator;
+      errors: Record<keyof Validator, string | null>;
+      success: boolean;
+    }) => {
+      if (!success) {
+        alert("Form submission failed. Check errors in the console.");
+        console.error("Form submission errors:", errors);
+        return;
+      }
+
+      alert("Form submitted successfully!");
+      console.log("Form submitted with values:", state);
+    },
+    []
+  );
+
   return (
     <KrafterRegister>
       <Form<Validator, Schema>
@@ -76,18 +105,61 @@ function FormFeatures() {
         )}
         fields={fields}
         schema={schema}
+        onSubmit={onSubmit}
       >
-        {(values) => {
-          console.log(
-            "Form values:",
-            values.fieldsState.birthDate?.toDateString()
-          );
-
-          return null;
-        }}
+        <FormInfo />
+        <FormErrors />
+        <Submit />
       </Form>
     </KrafterRegister>
   );
 }
 
 export default FormFeatures;
+
+const FormInfo = memo(() => {
+  const fieldsState = useFieldsState<Validator>();
+
+  const cleaned = Object.fromEntries(
+    Object.entries(fieldsState).map(([key, value]) => [
+      key,
+      value === undefined ? "undefined" : value,
+    ])
+  );
+
+  return (
+    <div className="col-span-1 md:col-span-2 lg:col-span-4">
+      <h2 className="text-lg font-semibold">Form State</h2>
+      <p className="text-sm text-muted-foreground">
+        <pre>{JSON.stringify(cleaned, null, 2)}</pre>
+      </p>
+    </div>
+  );
+});
+
+const FormErrors = memo(() => {
+  const fieldsError = useFieldsErrors<Validator>();
+  const cleaned = Object.fromEntries(
+    Object.entries(fieldsError).map(([key, value]) => [
+      key,
+      value === "" || value == null ? "No error" : value,
+    ])
+  );
+
+  return (
+    <div className="col-span-1 md:col-span-2 lg:col-span-4">
+      <h2 className="text-lg font-semibold">Form Errors</h2>
+      <p className="text-sm text-destructive">
+        <pre>{JSON.stringify(cleaned, null, 2)}</pre>
+      </p>
+    </div>
+  );
+});
+
+const Submit = memo(() => {
+  return (
+    <div className="col-span-1 md:col-span-2 lg:col-span-4">
+      <Button type="submit">Submit</Button>
+    </div>
+  );
+});

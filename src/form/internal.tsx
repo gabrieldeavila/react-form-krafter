@@ -7,6 +7,14 @@ export const FormContextCreate = createContext<FormContext<
   StandardSchemaV1<unknown, unknown>
 > | null>(null);
 
+export const FieldsStateContext = createContext<Record<string, unknown> | null>(
+  null
+);
+
+export const FieldsInfoContext = createContext<Record<string, unknown> | null>(
+  null
+);
+
 export function useInternalForm() {
   // this hook should only be used internally by the library
   // it provides access to the form context without exposing the FormContext type

@@ -20,29 +20,35 @@ export type FormApi<T> = {
   onFormSubmit: (e: React.FormEvent<HTMLFormElement>) => void | Promise<void>;
 };
 
+export type onSubmitProps<T> = {
+  state: T;
+  errors: Record<keyof T, string | null>;
+  success: boolean;
+};
+
+export type onUpdateProps<T> = {
+  fieldName: keyof T;
+  value: T[keyof T];
+  previousState: T;
+  currentState: T;
+};
+
+export type onChangeProps<T> = {
+  fieldName: keyof T;
+  value: T[keyof T];
+  previousState: T;
+  currentState: T;
+};
+
 export type FormUserProps<T, G extends StandardSchemaV1> = {
   fields: Field[];
   onSubmit?: ({
     errors,
     success,
     state,
-  }: {
-    state: T;
-    errors: Record<keyof T, string | null>;
-    success: boolean;
-  }) => void | Promise<void>;
-  onUpdate?: (props: {
-    fieldName: keyof T;
-    value: T[keyof T];
-    previousState: T;
-    currentState: T;
-  }) => void | Promise<OnUpdate | void>;
-  onChange?: (props: {
-    fieldName: keyof T;
-    value: T[keyof T];
-    previousState: T;
-    currentState: T;
-  }) => void | Promise<void>;
+  }: onSubmitProps<T>) => void | Promise<void>;
+  onUpdate?: (props: onUpdateProps<T>) => void | Promise<OnUpdate | void>;
+  onChange?: (props: onChangeProps<T>) => void | Promise<void>;
   schema: G;
 };
 

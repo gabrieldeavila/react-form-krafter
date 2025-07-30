@@ -79,8 +79,6 @@ function FieldComponent({ field }: { field: Field }) {
         );
 
         if (validationResult instanceof Array) {
-          console.log(currentFieldsState, fieldValue, "gg");
-
           const issues = validationResult.reduce(
             (acc, issue) => {
               const name = issue.path.join(".");

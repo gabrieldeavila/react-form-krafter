@@ -15,7 +15,11 @@ import type {
   FormUserProps,
 } from "../types";
 import Field from "./field";
-import { FormContextCreate } from "./internal";
+import {
+  FieldsInfoContext,
+  FieldsStateContext,
+  FormContextCreate,
+} from "./internal";
 
 const Form = <T, G extends StandardSchemaV1>({
   formApi,
@@ -232,24 +236,41 @@ const Form = <T, G extends StandardSchemaV1>({
 
   useImperativeHandle(formApi, () => formApiValue, [formApiValue]);
 
-  return (
-    <FormContextCreate.Provider
-      value={
-        formValue as FormContext<unknown, StandardSchemaV1<unknown, unknown>>
-      }
-    >
-      <Suspense fallback={<LoaderFallback />}>
-        <form className={formClassName} onSubmit={onFormSubmit}>
-          {props.fields?.map((field, index) => {
-            return <Field key={index} field={field} />;
-          })}
+  const fieldStateValue = useMemo(
+    () => fieldsState as Record<string, unknown>,
+    [fieldsState]
+  );
 
-          {props.children && typeof props.children === "function"
-            ? props.children(formApiValue)
-            : (props.children as React.ReactNode)}
-        </form>
-      </Suspense>
-    </FormContextCreate.Provider>
+  const fieldsInfoValue = useMemo(
+    () => fieldsInfo as Record<string, unknown>,
+    [fieldsInfo]
+  );
+
+  return (
+    <FieldsStateContext.Provider value={fieldStateValue}>
+      <FieldsInfoContext.Provider value={fieldsInfoValue}>
+        <FormContextCreate.Provider
+          value={
+            formValue as FormContext<
+              unknown,
+              StandardSchemaV1<unknown, unknown>
+            >
+          }
+        >
+          <Suspense fallback={<LoaderFallback />}>
+            <form className={formClassName} onSubmit={onFormSubmit}>
+              {props.fields?.map((field, index) => {
+                return <Field key={index} field={field} />;
+              })}
+
+              {props.children && typeof props.children === "function"
+                ? props.children(formApiValue)
+                : (props.children as React.ReactNode)}
+            </form>
+          </Suspense>
+        </FormContextCreate.Provider>
+      </FieldsInfoContext.Provider>
+    </FieldsStateContext.Provider>
   );
 };
 
@@ -266,4 +287,42 @@ export function useForm<T>() {
   }
 
   return context;
+}
+
+export function useFieldsState<T>(): T {
+  const fieldsState = useContext(FieldsStateContext);
+
+  if (!fieldsState) {
+    throw new Error("useFieldsState must be used within a Form");
+  }
+
+  return fieldsState as T;
+}
+
+export function useFieldsInfo<T>(): FieldsInfo<T> {
+  const fieldsInfo = useContext(FieldsInfoContext) as FieldsInfo<T> | null;
+
+  if (!fieldsInfo) {
+    throw new Error("useFieldsInfo must be used within a Form");
+  }
+
+  return fieldsInfo;
+}
+
+export function useFieldsErrors<T>(): Record<keyof T, string> {
+  const fieldsInfo = useFieldsInfo<T>();
+
+  return useMemo<Record<keyof T, string>>(
+    () => fieldsInfo.errors,
+    [fieldsInfo.errors]
+  );
+}
+
+export function useFieldValue<T>(fieldName: keyof T): T[keyof T] {
+  const fieldsState = useFieldsState<T>();
+
+  return useMemo<T[keyof T]>(
+    () => fieldsState[fieldName],
+    [fieldsState, fieldName]
+  );
 }
