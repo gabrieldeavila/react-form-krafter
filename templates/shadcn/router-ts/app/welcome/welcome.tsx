@@ -6,7 +6,7 @@ import FormFeatures from "./formFeatures";
 export function Welcome() {
   return (
     <div className="flex flex-col items-center w-full">
-      <div className="container mt-24 flex flex-col gap-16">
+      <div className="container mt-12 lg:mt-24 flex flex-col gap-16">
         <div className="flex flex-col gap-9">
           <h1
             className={cn(

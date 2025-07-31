@@ -37,11 +37,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <Links />
         </head>
         <body className="flex min-h-screen flex-col">
-          {/* <KrafterRegister> */}
           <Navbar />
-          <main className="flex-1 px-4">{children}</main>
+          <main className="flex-1 px-4 pt-20">{children}</main>
           <Footer />
-          {/* </KrafterRegister> */}
           <ScrollRestoration />
           <Scripts />
         </body>

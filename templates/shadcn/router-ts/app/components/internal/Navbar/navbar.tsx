@@ -170,7 +170,12 @@ function Navbar() {
         </div>
       </header>
 
-      {showMobileNav && <MobileNav navbarBounds={navbarBounds} />}
+      {showMobileNav && (
+        <MobileNav
+          setClose={() => setShowMobileNav(false)}
+          navbarBounds={navbarBounds}
+        />
+      )}
     </>
   );
 }
