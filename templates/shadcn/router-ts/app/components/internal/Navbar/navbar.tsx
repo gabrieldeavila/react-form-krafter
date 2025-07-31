@@ -69,15 +69,15 @@ function Navbar() {
                           </a>
                         </NavigationMenuLink>
                       </li>
-                      <ListItem to="/docs" title="Introduction">
-                        Re-usable components built using Radix UI and Tailwind
-                        CSS.
+                      <ListItem to="/platform/docs/krafter" title="Krafter">
+                        The foundation for this template is built on React Form
+                        Krafter
                       </ListItem>
-                      <ListItem to="/docs/installation" title="Installation">
-                        How to install dependencies and structure your app.
+                      <ListItem to="/platform/docs" title="React Router Dom">
+                        Design your routes and navigation with ease.
                       </ListItem>
                       <ListItem
-                        to="/docs/primitives/typography"
+                        to="/platform/docs/typography"
                         title="Typography"
                       >
                         Styles for headings, paragraphs, lists...etc
