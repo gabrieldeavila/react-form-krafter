@@ -8,6 +8,7 @@ import {
 import { z } from "zod";
 import KrafterRegister from "~/components/internal/krafter/register";
 import { Button } from "~/components/ui/button";
+import { Skeleton } from "~/components/ui/skeleton";
 import { cn } from "~/lib/utils";
 
 const schema = z.object({
@@ -103,6 +104,14 @@ function FormFeatures() {
           "grid gap-4",
           "grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
         )}
+        loaderFallback={
+          <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+            <Skeleton className="h-12 rounded-md" />
+            <Skeleton className="h-12 rounded-md" />
+            <Skeleton className="h-12 rounded-md" />
+            <Skeleton className="h-12 rounded-md" />
+          </div>
+        }
         fields={fields}
         schema={schema}
         onSubmit={onSubmit}

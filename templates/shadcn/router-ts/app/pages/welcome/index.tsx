@@ -3,7 +3,14 @@ import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 import FormFeatures from "./formFeatures";
 
-export function Welcome() {
+export function meta() {
+  return [
+    { title: "New React Form Krafter App" },
+    { name: "description", content: "Welcome to React Form Krafter!" },
+  ];
+}
+
+export default function Welcome() {
   return (
     <div className="flex flex-col items-center w-full">
       <div className="container mt-12 lg:mt-24 flex flex-col gap-16">
