@@ -3,10 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "react-router build",
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
+    "build": "react-router build",
+    "preview": "npm run build && vite preview",
     "lint": "eslint ."
   },
   "dependencies": {
