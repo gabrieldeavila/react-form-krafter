@@ -7,11 +7,15 @@ import {
   BreadcrumbSeparator,
 } from "~/components/ui/breadcrumb";
 import { Separator } from "~/components/ui/separator";
-import {
-  SidebarInset,
-  SidebarTrigger
-} from "~/components/ui/sidebar";
+import { SidebarInset, SidebarTrigger } from "~/components/ui/sidebar";
 import FormFeatures from "./formFeatures";
+
+export function meta() {
+  return [
+    { title: "Welcome" },
+    { name: "description", content: "Try doing something cool!" },
+  ];
+}
 
 export default function Page() {
   return (
