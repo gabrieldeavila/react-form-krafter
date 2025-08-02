@@ -52,12 +52,16 @@ export type FormUserProps<T, G extends StandardSchemaV1> = {
   schema: G;
 };
 
+export type FormFallbackProps = {
+  field: Field;
+};
+
 export type FormUserConfigProps<T> = Partial<{
   formApi: React.RefObject<FormApi<T> | null>;
   formClassName?: string;
   initialDisabledFields?: (keyof T)[];
   children: React.ReactNode | null | ((formApi: FormApi<T>) => React.ReactNode);
-  loaderFallback?: React.ReactNode;
+  loaderFallback?: React.ReactNode | ((field: FormFallbackProps) => React.ReactNode);
 }>;
 
 export type FormContext<T, G extends StandardSchemaV1> = FormUserProps<T, G> & {

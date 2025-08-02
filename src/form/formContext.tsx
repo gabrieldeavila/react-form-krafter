@@ -9,12 +9,13 @@ import {
   useState,
 } from "react";
 import type {
+  Field,
   FieldsInfo,
   FormContext,
   FormUserConfigProps,
   FormUserProps,
 } from "../types";
-import Field from "./field";
+import FieldComp from "./field";
 import {
   FieldsInfoContext,
   FieldsStateContext,
@@ -227,12 +228,18 @@ const Form = <T, G extends StandardSchemaV1>({
     ]
   );
 
-  const LoaderFallback = useCallback(() => {
-    if (loaderFallback) {
-      return loaderFallback;
-    }
-    return <div>...</div>;
-  }, [loaderFallback]);
+  const LoaderFallback = useCallback(
+    ({ field }: { field: Field }) => {
+      if (loaderFallback) {
+        return typeof loaderFallback === "function"
+          ? loaderFallback({ field })
+          : loaderFallback;
+      }
+
+      return <div>...</div>;
+    },
+    [loaderFallback]
+  );
 
   useImperativeHandle(formApi, () => formApiValue, [formApiValue]);
 
@@ -257,17 +264,22 @@ const Form = <T, G extends StandardSchemaV1>({
             >
           }
         >
-          <Suspense fallback={<LoaderFallback />}>
-            <form className={formClassName} onSubmit={onFormSubmit}>
-              {props.fields?.map((field, index) => {
-                return <Field key={index} field={field} />;
-              })}
+          <form className={formClassName} onSubmit={onFormSubmit}>
+            {props.fields?.map((field, index) => {
+              return (
+                <Suspense
+                  key={index}
+                  fallback={<LoaderFallback field={field} />}
+                >
+                  <FieldComp field={field} />
+                </Suspense>
+              );
+            })}
 
-              {props.children && typeof props.children === "function"
-                ? props.children(formApiValue)
-                : (props.children as React.ReactNode)}
-            </form>
-          </Suspense>
+            {props.children && typeof props.children === "function"
+              ? props.children(formApiValue)
+              : (props.children as React.ReactNode)}
+          </form>
         </FormContextCreate.Provider>
       </FieldsInfoContext.Provider>
     </FieldsStateContext.Provider>
