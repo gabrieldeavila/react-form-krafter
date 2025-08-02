@@ -1,18 +1,20 @@
-# Welcome to React Router!
+# Welcome to React Form Krafter!
 
-A modern, production-ready template for building full-stack React applications using React Router.
+A modern, production-ready template for building full-stack React applications using React Form Krafter.
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+This template was based on the [React Router default template](https://github.com/remix-run/react-router-templates/tree/main/default).
 
 ## Features
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+- 📝 **Flexible, type-safe forms** powered by React Form Krafter
+- 🚀 **Server-side rendering** for fast, SEO-friendly pages
+- ⚡️ **Hot Module Replacement (HMR)** for instant feedback during development
+- 📦 **Asset bundling and optimization** for efficient production builds
+- 🔄 **Data loading and mutations** with React Router
+- 🔒 **TypeScript by default** for robust type safety
+- 🎉 **TailwindCSS & Shadcn UI** for modern, accessible styling
+- 🧭 **Client-side routing** with React Router
+- 📖 [React Form Krafter docs](https://react-form-krafter.vercel.app/) for more info
 
 ## Getting Started
 
@@ -23,6 +25,17 @@ Install the dependencies:
 ```bash
 npm install
 ```
+
+## About This Template
+
+This is the **Basic Template** for React Form Krafter, designed to help you quickly start building forms in React with type safety, modern UI, and routing. It combines:
+
+- **React Form Krafter** for flexible, type-safe form creation and validation
+- **Shadcn UI** for beautiful, accessible React components
+- **React Router** for client-side navigation
+- **TypeScript** for robust type checking
+
+This template is ideal for projects that need a simple, extensible form setup with best practices out of the box.
 
 ### Development
 
@@ -57,13 +70,6 @@ docker run -p 3000:3000 my-app
 
 The containerized application can be deployed to any platform that supports Docker, including:
 
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
 ### DIY Deployment
 
 If you're familiar with deploying Node applications, the built-in app server is production-ready.
@@ -80,8 +86,4 @@ Make sure to deploy the output of `npm run build`
 
 ## Styling
 
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
-
----
-
-Built with ❤️ using React Router.
+This template comes with [Tailwind CSS](https://tailwindcss.com/) and [Shadcn UI](https://ui.shadcn.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
