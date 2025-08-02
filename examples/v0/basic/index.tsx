@@ -1,4 +1,4 @@
-import { lazy, useEffect, useRef, useState, type ComponentType } from "react";
+import { lazy, useRef, type ComponentType } from "react";
 import { z } from "zod";
 import Form from "@lib/form/formContext";
 import Register from "@lib/register/registerContext";
@@ -42,18 +42,6 @@ type Validator = z.infer<Schema>;
 function ExampleV0Basic() {
   const formApi = useRef<FormApi<Validator> | null>(null);
 
-  const [show, setShow] = useState(false);
-
-  useEffect(() => {
-    setTimeout(() => {
-      setShow(true);
-    }, 1000);
-  }, []);
-
-  if (!show) {
-    return <div className="center">Loading kkkk...</div>;
-  }
-
   return (
     <div className="example-wrapper">
       <Register<FieldsValue> components={COMPONENTS}>
@@ -62,11 +50,6 @@ function ExampleV0Basic() {
           schema={schema}
           formApi={formApi}
           fields={BASIC_FIELDS_EXAMPLE}
-          loaderFallback={({ field }) => (
-            <div className="loader-fallback">
-              Loading {field.name}...
-            </div>
-          )}
           onSubmit={async (values) => {
             if (values.success) {
               alert("Form submitted successfully!");
