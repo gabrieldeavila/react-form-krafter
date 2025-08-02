@@ -80,10 +80,16 @@ const config: Config = {
       },
       items: [
         {
-          type: "docSidebar",
           sidebarId: "tutorialSidebar",
           position: "left",
           label: "Tutorial",
+          to: "/docs/intro",
+        },
+        {
+          to: "/docs/templates",
+          sidebarId: "tutorialSidebar",
+          position: "left",
+          label: "Templates",
         },
         // { to: "/blog", label: "Blog", position: "left" },
         {
