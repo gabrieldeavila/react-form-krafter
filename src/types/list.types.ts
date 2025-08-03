@@ -29,9 +29,11 @@ export type ListItemRowComponentProps<T> = {
   remove: ListApi<T>["removeItem"];
 };
 
-export type ListAddSuccessProps<T> = Partial<{
+export type ListAddSuccessReturn<T> = Partial<{
   item: T;
-}> | void;
+}>;
+
+export type ListAddSuccessProps<T> = ListAddSuccessReturn<T> | void;
 
 export type ListUserProps<T, G extends StandardSchemaV1> = FormUserProps<
   T,

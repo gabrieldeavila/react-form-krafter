@@ -2,6 +2,7 @@ import { Form } from "@lib/form";
 import {
   type Field,
   type FormApi,
+  type ListAddSuccessReturn,
   type ListApi,
   type ListContext,
 } from "@lib/types";
@@ -38,7 +39,8 @@ const List = <T, G extends StandardSchemaV1>({
 
     const newItem = addRowApi.current.fieldsState as T;
 
-    const { item } = (await userProps.addProps.onSuccess?.(newItem)) ?? {};
+    const { item } = ((await userProps.addProps.onSuccess?.(newItem)) ??
+      {}) as ListAddSuccessReturn<T>;
 
     const itemToAdd = item || newItem;
 

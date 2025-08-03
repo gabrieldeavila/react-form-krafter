@@ -119,10 +119,7 @@ function FieldComponent({ field }: { field: Field }) {
       const fieldValue = currentFieldsState[field.name];
 
       // if the field is the same as the previous state, do not update
-      if (
-        currentFieldsInfo.previousState[field.name] === fieldValue &&
-        !currentFieldsInfo.dirty.includes(field.name)
-      ) {
+      if (currentFieldsInfo.previousState[field.name] === fieldValue) {
         return;
       }
 
