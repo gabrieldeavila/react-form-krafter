@@ -7,12 +7,30 @@ import {
   type ListContext,
 } from "@lib/types";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
-import { createContext, useCallback, useMemo, useRef, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 const ListContext = createContext<ListContext<
   unknown,
   StandardSchemaV1<unknown, unknown>
 > | null>(null);
+
+const ListApiContext = createContext<ListApi<unknown> | null>(null);
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const useListApi = <T,>() => {
+  const context = useContext(ListApiContext);
+  if (!context) {
+    throw new Error("useListApi must be used within a List component");
+  }
+  return context as ListApi<T>;
+};
 
 const List = <T, G extends StandardSchemaV1>({
   children,
@@ -100,39 +118,41 @@ const List = <T, G extends StandardSchemaV1>({
         listValue as ListContext<unknown, StandardSchemaV1<unknown, unknown>>
       }
     >
-      <userProps.addProps.rowComponent
-        add={addItem}
-        formApi={addRowApi}
-        form={
-          <Form
-            forceFieldChangeState={rowAddState}
-            formApi={addRowApi}
-            fields={fieldsAddRow}
-            schema={userProps.schema}
-            formClassName={userProps.formProps?.formClassName}
-            onChange={({ currentState, value, fieldName }) => {
-              setRowAddState(() => ({
-                ...currentState,
-                [fieldName]: value,
-              }));
-            }}
-          />
-        }
-      />
-
-      {items.map((item, index) => (
-        <FormItem
-          key={index}
-          fieldsFormProps={fieldsFormProps}
-          userProps={userProps}
-          item={item}
-          index={index}
-          updateItem={updateItem}
-          removeItem={removeItem}
+      <ListApiContext.Provider value={listApiValue as ListApi<unknown>}>
+        <userProps.addProps.rowComponent
+          add={addItem}
+          formApi={addRowApi}
+          form={
+            <Form
+              forceFieldChangeState={rowAddState}
+              formApi={addRowApi}
+              fields={fieldsAddRow}
+              schema={userProps.schema}
+              formClassName={userProps.formProps?.formClassName}
+              onChange={({ currentState, value, fieldName }) => {
+                setRowAddState(() => ({
+                  ...currentState,
+                  [fieldName]: value,
+                }));
+              }}
+            />
+          }
         />
-      ))}
 
-      {typeof children === "function" ? children(listApiValue) : children}
+        {items.map((item, index) => (
+          <FormItem
+            key={index}
+            fieldsFormProps={fieldsFormProps}
+            userProps={userProps}
+            item={item}
+            index={index}
+            updateItem={updateItem}
+            removeItem={removeItem}
+          />
+        ))}
+
+        {typeof children === "function" ? children(listApiValue) : children}
+      </ListApiContext.Provider>
     </ListContext.Provider>
   );
 };

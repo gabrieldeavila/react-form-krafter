@@ -1,9 +1,14 @@
-import { memo, useCallback } from "react";
+import { memo, useCallback, useRef } from "react";
 import {
   Form,
+  List,
   useFieldsErrors,
   useFieldsState,
+  useListApi,
   type Field,
+  type ListAddRowComponentProps,
+  type ListApi,
+  type ListItemRowComponentProps,
 } from "react-form-krafter";
 import { z } from "zod";
 import KrafterRegister from "~/components/internal/krafter/register";
@@ -74,7 +79,36 @@ const fields: Field[] = [
   },
 ];
 
+const skillSchema = z.object({
+  name: z.string().min(2, "Skill name must be at least 2 characters long"),
+  level: z.enum(["Beginner", "Intermediate", "Advanced"]),
+});
+
+type SkillSchema = typeof skillSchema;
+type SkillValidator = z.infer<SkillSchema>;
+
+const skillFields: Field[] = [
+  {
+    name: "name",
+    label: "Skill",
+    placeholder: "Enter a skill",
+    type: "text",
+  },
+  {
+    name: "level",
+    label: "Level",
+    placeholder: "Select a level",
+    type: "select",
+    options: [
+      { value: "Beginner", label: "Beginner" },
+      { value: "Intermediate", label: "Intermediate" },
+      { value: "Advanced", label: "Advanced" },
+    ],
+  },
+];
+
 function FormFeatures() {
+  const listApi = useRef<ListApi<SkillValidator>>(null);
   const onSubmit = useCallback(
     ({
       errors,
@@ -97,8 +131,32 @@ function FormFeatures() {
     []
   );
 
+  const addRowComponent = useCallback(
+    ({ add, form }: ListAddRowComponentProps<SkillValidator>) => (
+      <div className="flex items-end gap-4">
+        <div className="flex-grow">{form}</div>
+        <Button onClick={add}>Add Skill</Button>
+      </div>
+    ),
+    []
+  );
+
+  const itemRowComponent = useCallback(
+    ({ index, remove, form }: ListItemRowComponentProps<SkillValidator>) => (
+      <div className="flex items-end gap-4 mt-2 p-4 border rounded-md">
+        <div className="flex-grow">{form}</div>
+        <Button variant="destructive" onClick={() => remove(index)}>
+          Remove
+        </Button>
+      </div>
+    ),
+    []
+  );
+
   return (
     <KrafterRegister>
+      <h1 className="text-2xl font-bold mb-4">Form Features Example</h1>
+    
       <Form<Validator, Schema>
         formClassName={cn(
           "grid gap-4",
@@ -121,11 +179,44 @@ function FormFeatures() {
         <FormInfo />
         <FormErrors />
       </Form>
+
+      <div className="mt-8">
+        <h2 className="text-2xl font-bold mb-4">Skills List</h2>
+        <List<SkillValidator, SkillSchema>
+          listApi={listApi}
+          fields={skillFields}
+          schema={skillSchema}
+          addProps={{
+            rowComponent: addRowComponent,
+          }}
+          itemsProps={{
+            rowComponent: itemRowComponent,
+          }}
+          formProps={{
+            formClassName: "grid grid-cols-1 md:grid-cols-2 gap-4",
+          }}
+        >
+          <ListInfo />
+        </List>
+      </div>
     </KrafterRegister>
   );
 }
 
 export default FormFeatures;
+
+const ListInfo = memo(() => {
+  const { items } = useListApi<SkillValidator>();
+
+  return (
+    <div className="col-span-1 md:col-span-2 lg:col-span-4 mt-4">
+      <h2 className="text-lg font-semibold">List State</h2>
+      <p className="text-sm text-muted-foreground">
+        <pre>{JSON.stringify(items, null, 2)}</pre>
+      </p>
+    </div>
+  );
+});
 
 const FormInfo = memo(() => {
   const fieldsState = useFieldsState<Validator>();

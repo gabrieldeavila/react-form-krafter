@@ -20,6 +20,7 @@ const SelectField: FC<RegisterFieldRenderProps<Date>> = memo(
         <Label htmlFor={field.name}>{field.label}</Label>
 
         <Select
+          value={field.value?.toString() || ""}
           onValueChange={(value) => {
             methods.onChange(value);
             methods.onBlur();
