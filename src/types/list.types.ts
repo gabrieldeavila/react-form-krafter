@@ -1,5 +1,12 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
-import type { FormApi, FormFallbackProps, FormUserProps } from "./form.types";
+import type {
+  FormApi,
+  FormFallbackProps,
+  FormUserProps,
+  onChangeProps,
+  OnUpdate,
+  onUpdateProps,
+} from "./form.types";
 
 export type ListApi<T> = {
   addItem: () => void;
@@ -9,9 +16,17 @@ export type ListApi<T> = {
 };
 
 export type ListAddRowComponentProps<T> = {
-  onAdd: ListApi<T>["addItem"];
+  add: ListApi<T>["addItem"];
   formApi: React.RefObject<FormApi<T>>;
   form: React.ReactNode;
+};
+
+export type ListItemRowComponentProps<T> = {
+  item: T;
+  formApi: React.RefObject<FormApi<T>>;
+  form: React.ReactNode;
+  index: number;
+  remove: ListApi<T>["removeItem"];
 };
 
 export type ListAddSuccessProps<T> = Partial<{
@@ -29,6 +44,15 @@ export type ListUserProps<T, G extends StandardSchemaV1> = FormUserProps<
     ) => ListAddSuccessProps<T> | Promise<ListAddSuccessProps<T>>;
     onError?: (
       error: FormApi<T>["fieldsInfo"]["errors"]
+    ) => void | Promise<void>;
+  };
+  itemsProps: {
+    rowComponent: React.FC<ListItemRowComponentProps<T>>;
+    onUpdate?: (
+      props: onUpdateProps<T> & { item: T; index: number }
+    ) => void | Promise<OnUpdate | void>;
+    onChange?: (
+      props: onChangeProps<T> & { item: T; index: number }
     ) => void | Promise<void>;
   };
 };

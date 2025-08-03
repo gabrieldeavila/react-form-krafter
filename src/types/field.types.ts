@@ -9,6 +9,7 @@ export type BaseField = {
   metadata?: {
     isListField?: boolean;
     isAddRow?: boolean;
+    listIndex?: number;
   } & Record<string, unknown>;
   wrapperClassName?: string;
   inputClassName?: string;

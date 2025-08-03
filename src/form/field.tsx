@@ -27,43 +27,13 @@ function FieldComponent({ field }: { field: Field }) {
     [components, field.type]
   );
 
-  const handleFieldUpdate = useCallback(
-    async ({ isBlur }: { isBlur: boolean }) => {
-      await promiseChange.current;
-
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-        timerRef.current = null;
-      }
-
-      if (isBlur) {
-        setFieldsInfo((prevInfo) => ({
-          ...prevInfo,
-          blurred: prevInfo.blurred.includes(field.name)
-            ? prevInfo.blurred
-            : [...(prevInfo.blurred || []), field.name],
-        }));
-      }
-
-      const currentFieldsState: Record<string, unknown> = await new Promise(
-        (resolve) => {
-          setFieldsState((prevState: Record<string, unknown>) => {
-            resolve(prevState);
-            return prevState;
-          });
-        }
-      );
-
-      const currentFieldsInfo: FieldsInfo<Record<string, unknown>> =
-        await new Promise((resolve) => {
-          setFieldsInfo((prevInfo: FieldsInfo<Record<string, unknown>>) => {
-            resolve(prevInfo);
-            return prevInfo;
-          });
-        });
-
-      const fieldValue = currentFieldsState[field.name];
-
+  const checkForErrors = useCallback(
+    async (
+      currentFieldsState: Record<string, unknown>,
+      currentFieldsInfo: FieldsInfo<Record<string, unknown>>,
+      field: Field,
+      fieldValue: unknown
+    ) => {
       if ((fieldValue == null || fieldValue == "") && field.required) {
         setFieldsInfo((prevInfo) => ({
           ...prevInfo,
@@ -107,6 +77,56 @@ function FieldComponent({ field }: { field: Field }) {
           }));
         }
       }
+    },
+    [schema, setFieldsInfo, settings?.labels?.required]
+  );
+
+  const handleFieldUpdate = useCallback(
+    async ({ isBlur }: { isBlur: boolean }) => {
+      await promiseChange.current;
+
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+
+      if (isBlur) {
+        setFieldsInfo((prevInfo) => ({
+          ...prevInfo,
+          blurred: prevInfo.blurred.includes(field.name)
+            ? prevInfo.blurred
+            : [...(prevInfo.blurred || []), field.name],
+        }));
+      }
+
+      const currentFieldsState: Record<string, unknown> = await new Promise(
+        (resolve) => {
+          setFieldsState((prevState: Record<string, unknown>) => {
+            resolve(prevState);
+            return prevState;
+          });
+        }
+      );
+
+      const currentFieldsInfo: FieldsInfo<Record<string, unknown>> =
+        await new Promise((resolve) => {
+          setFieldsInfo((prevInfo: FieldsInfo<Record<string, unknown>>) => {
+            resolve(prevInfo);
+            return prevInfo;
+          });
+        });
+
+      const fieldValue = currentFieldsState[field.name];
+
+      // if the field is the same as the previous state, do not update
+      if (
+        currentFieldsInfo.previousState[field.name] === fieldValue &&
+        !currentFieldsInfo.dirty.includes(field.name)
+      ) {
+        return;
+      }
+
+      checkForErrors(currentFieldsState, currentFieldsInfo, field, fieldValue);
 
       const updateProps = await onUpdate?.({
         fieldName: field.name,
@@ -126,6 +146,13 @@ function FieldComponent({ field }: { field: Field }) {
           [field.name]:
             currentFieldsInfo.previousState[field.name] || field.initialValue, // Fallback to initial value if not set
         }));
+
+        checkForErrors(
+          currentFieldsInfo.previousState,
+          currentFieldsInfo,
+          field,
+          fieldValue
+        );
         return;
       }
 
@@ -137,16 +164,7 @@ function FieldComponent({ field }: { field: Field }) {
         },
       }));
     },
-    [
-      field.initialValue,
-      field.name,
-      field.required,
-      onUpdate,
-      schema,
-      setFieldsInfo,
-      setFieldsState,
-      settings?.labels?.required,
-    ]
+    [checkForErrors, field, onUpdate, setFieldsInfo, setFieldsState]
   );
 
   const handleBlur = useCallback(() => {

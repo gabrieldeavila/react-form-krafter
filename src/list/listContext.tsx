@@ -99,7 +99,7 @@ const List = <T, G extends StandardSchemaV1>({
       }
     >
       <userProps.addProps.rowComponent
-        onAdd={addItem}
+        add={addItem}
         formApi={addRowApi}
         form={
           <Form
@@ -118,9 +118,88 @@ const List = <T, G extends StandardSchemaV1>({
         }
       />
 
+      {items.map((item, index) => (
+        <FormItem
+          key={index}
+          fieldsFormProps={fieldsFormProps}
+          userProps={userProps}
+          item={item}
+          index={index}
+          updateItem={updateItem}
+          removeItem={removeItem}
+        />
+      ))}
+
       {typeof children === "function" ? children(listApiValue) : children}
     </ListContext.Provider>
   );
 };
 
 export default List;
+
+const FormItem = <T, G extends StandardSchemaV1>({
+  fieldsFormProps,
+  userProps,
+  item,
+  index,
+  updateItem,
+  removeItem,
+}: {
+  fieldsFormProps: Field[];
+  userProps: ListContext<T, G>["userProps"];
+  item: T;
+  index: number;
+  updateItem: ListApi<T>["updateItem"];
+  removeItem: ListApi<T>["removeItem"];
+}) => {
+  const itemApi = useRef<FormApi<T>>(null!);
+
+  const itemFields = useMemo(
+    () =>
+      fieldsFormProps.map((field) => ({
+        ...field,
+        initialValue: (item as Record<string, unknown>)[field.name],
+        metadata: {
+          ...(field.metadata || {}),
+          listIndex: index,
+        },
+      })),
+    [fieldsFormProps, index, item]
+  );
+
+  return (
+    <userProps.itemsProps.rowComponent
+      item={item}
+      index={index}
+      formApi={itemApi}
+      remove={removeItem}
+      form={
+        <Form<T, G>
+          forceFieldChangeState={item}
+          formApi={itemApi}
+          fields={itemFields}
+          schema={userProps.schema}
+          formClassName={userProps.formProps?.formClassName}
+          onChange={(props) => {
+            const { currentState, fieldName, value } = props;
+
+            updateItem(index, { ...currentState, [fieldName]: value } as T);
+
+            userProps.itemsProps.onChange?.({
+              ...props,
+              item,
+              index,
+            });
+          }}
+          onUpdate={(props) => {
+            return userProps.itemsProps.onUpdate?.({
+              ...props,
+              item,
+              index,
+            });
+          }}
+        />
+      }
+    />
+  );
+};

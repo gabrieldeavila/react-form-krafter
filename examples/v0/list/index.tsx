@@ -3,6 +3,7 @@ import Register from "@lib/register/registerContext";
 import type {
   ListAddRowComponentProps,
   ListApi,
+  ListItemRowComponentProps,
   RegisterComponent,
   RegisterFieldRenderProps,
 } from "@lib/types";
@@ -44,11 +45,21 @@ function ExampleV0List() {
   const listApi = useRef<ListApi<Validator> | null>(null);
 
   const addRowComponent = useCallback(
-    ({ onAdd, form }: ListAddRowComponentProps<Validator>) => (
+    ({ add, form }: ListAddRowComponentProps<Validator>) => (
       <div>
         {form}
 
-        <button onClick={onAdd}>Add Row</button>
+        <button onClick={add}>Add Row</button>
+      </div>
+    ),
+    []
+  );
+
+  const itemRowComponent = useCallback(
+    ({ index, remove, form }: ListItemRowComponentProps<Validator>) => (
+      <div className="item-row">
+        {form}
+        <button onClick={() => remove(index)}>Remove Row</button>
       </div>
     ),
     []
@@ -59,6 +70,24 @@ function ExampleV0List() {
       <Register<FieldsValue> components={COMPONENTS}>
         <List<Validator, Schema>
           listApi={listApi}
+          itemsProps={{
+            rowComponent: itemRowComponent,
+            onUpdate: async ({ item, index, currentState }) => {
+              console.log("Item updated:", item, "at index:", index);
+              console.log("Current state:", currentState);
+
+              const fakeDelay = (ms: number) =>
+                new Promise((resolve) => setTimeout(resolve, ms));
+
+              await fakeDelay(1000); // Simulate a delay for the update
+
+              if (currentState.age < 18) {
+                return {
+                  preventUpdate: true,
+                };
+              }
+            },
+          }}
           addProps={{
             rowComponent: addRowComponent,
             onError: (error) => {

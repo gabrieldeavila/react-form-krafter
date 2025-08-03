@@ -1,5 +1,5 @@
 import type { FieldMethods, RegisterField } from "@lib/types";
-import { memo } from "react";
+import { memo, useMemo } from "react";
 
 export type FieldBaseProps = {
   field: RegisterField<string | number>;
@@ -16,15 +16,22 @@ const FieldBase = memo(
   }: FieldBaseProps & {
     onFieldChange: (value: unknown) => string | number;
   }) => {
+    const name = useMemo(() => {
+      if (field.metadata?.listIndex !== undefined) {
+        return `${field.name}-${field.metadata.listIndex}`;
+      }
+      return field.name;
+    }, [field.metadata?.listIndex, field.name]);
+
     return (
       <div className="field-wrapper">
-        <label htmlFor={field.name}>{field.label}</label>
+        <label htmlFor={name}>{field.label}</label>
 
         <input
           type={type}
           placeholder={field.placeholder}
-          id={field.name}
-          name={field.name}
+          id={name}
+          name={name}
           required={field.required}
           disabled={field.isDisabled}
           value={
@@ -44,7 +51,9 @@ const FieldBase = memo(
           onBlur={methods.onBlur}
         />
 
-        {field.error && field.isErrorVisible && <span className="error">{field.error}</span>}
+        {field.error && field.isErrorVisible && (
+          <span className="error">{field.error}</span>
+        )}
       </div>
     );
   }
