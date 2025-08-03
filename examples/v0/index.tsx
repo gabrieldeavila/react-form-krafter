@@ -4,6 +4,7 @@ import { lazy, Suspense, useMemo, useState } from "react";
 const ExampleV0BasicAsync = lazy(() => import("./basic_async"));
 const ExampleV0Basic = lazy(() => import("./basic"));
 const ExampleV0Select = lazy(() => import("./select"));
+const ExampleV0List = lazy(() => import("./list"));
 
 const OPTIONS = {
   basic: {
@@ -17,6 +18,10 @@ const OPTIONS = {
   select: {
     title: "Select and Linked Fields",
     component: ExampleV0Select,
+  },
+  list: {
+    title: "List Fields",
+    component: ExampleV0List,
   },
 };
 

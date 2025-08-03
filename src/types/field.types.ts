@@ -6,7 +6,10 @@ export type BaseField = {
   placeholder?: string;
   disabled?: boolean;
   options?: Array<{ label: string; value: string | number }>;
-  metadata?: Record<string, unknown>;
+  metadata?: {
+    isListField?: boolean;
+    isAddRow?: boolean;
+  } & Record<string, unknown>;
   wrapperClassName?: string;
   inputClassName?: string;
 };

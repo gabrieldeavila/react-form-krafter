@@ -13,9 +13,12 @@ export type FormApi<T> = {
   setDisabled: (fieldName: keyof T, disabled: boolean) => void;
   setError: (fieldName: keyof T, error: string | null) => void;
   setFieldValue: (fieldName: keyof T, value: T[keyof T]) => void;
+  setDidSubmitOnce: React.Dispatch<React.SetStateAction<boolean>>;
+  checkForErrors: () => Promise<void>;
   fieldsState: T;
   isSubmitting: boolean;
   didSubmitOnce: boolean;
+  hasSomeError: boolean;
   fieldsInfo: FieldsInfo<T>;
   onFormSubmit: (e: React.FormEvent<HTMLFormElement>) => void | Promise<void>;
 };
@@ -58,10 +61,13 @@ export type FormFallbackProps = {
 
 export type FormUserConfigProps<T> = Partial<{
   formApi: React.RefObject<FormApi<T> | null>;
-  formClassName?: string;
-  initialDisabledFields?: (keyof T)[];
+  formClassName: string;
+  forceFieldChangeState: T;
+  initialDisabledFields: (keyof T)[];
   children: React.ReactNode | null | ((formApi: FormApi<T>) => React.ReactNode);
-  loaderFallback?: React.ReactNode | ((field: FormFallbackProps) => React.ReactNode);
+  loaderFallback:
+    | React.ReactNode
+    | ((field: FormFallbackProps) => React.ReactNode);
 }>;
 
 export type FormContext<T, G extends StandardSchemaV1> = FormUserProps<T, G> & {

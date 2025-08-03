@@ -4,16 +4,18 @@ import {
   Suspense,
   useCallback,
   useContext,
+  useEffect,
   useImperativeHandle,
   useMemo,
   useState,
 } from "react";
-import type {
-  Field,
-  FieldsInfo,
-  FormContext,
-  FormUserConfigProps,
-  FormUserProps,
+import {
+  type FormApi,
+  type Field,
+  type FieldsInfo,
+  type FormContext,
+  type FormUserConfigProps,
+  type FormUserProps,
 } from "../types";
 import FieldComp from "./field";
 import {
@@ -21,12 +23,14 @@ import {
   FieldsStateContext,
   FormContextCreate,
 } from "./internal";
+import { standardValidate } from "@lib/validation/standard";
 
 const Form = <T, G extends StandardSchemaV1>({
   formApi,
   formClassName,
   initialDisabledFields,
   loaderFallback,
+  forceFieldChangeState,
   ...props
 }: FormUserConfigProps<T> & FormUserProps<T, G>) => {
   const initialState: T = useMemo(
@@ -41,6 +45,12 @@ const Form = <T, G extends StandardSchemaV1>({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [didSubmitOnce, setDidSubmitOnce] = useState(false);
 
+  useEffect(() => {
+    if (forceFieldChangeState) {
+      setFieldsState(forceFieldChangeState);
+    }
+  }, [forceFieldChangeState]);
+
   const [fieldsInfo, setFieldsInfo] = useState<FieldsInfo<T>>({
     dirty: [],
     focused: [],
@@ -51,6 +61,14 @@ const Form = <T, G extends StandardSchemaV1>({
     disabled: initialDisabledFields ?? ([] as (keyof T)[]),
     previousState: initialState,
   });
+
+  const hasSomeError = useMemo(
+    () =>
+      Object.keys(fieldsInfo.errors).some(
+        (key) => fieldsInfo.errors[key as keyof T] != null
+      ),
+    [fieldsInfo.errors]
+  );
 
   // #TODO: we could create a wrapper and only change the key - it would reset and scale better
   const reset = useCallback(() => {
@@ -174,6 +192,25 @@ const Form = <T, G extends StandardSchemaV1>({
     [setFieldsState]
   );
 
+  const checkForErrors = useCallback(async () => {
+    const validationResult = await standardValidate(props.schema, fieldsState);
+
+    if (validationResult instanceof Array) {
+      const issues = validationResult.reduce((acc, issue) => {
+        const name = issue.path.join(".");
+
+        acc[name] = issue.message;
+
+        return acc;
+      }, {});
+
+      setFieldsInfo((prevInfo) => ({
+        ...prevInfo,
+        errors: issues,
+      }));
+    }
+  }, [props.schema, fieldsState]);
+
   const formValue = useMemo<FormContext<T, G>>(
     () => ({
       ...props,
@@ -199,7 +236,7 @@ const Form = <T, G extends StandardSchemaV1>({
     ]
   );
 
-  const formApiValue = useMemo(
+  const formApiValue = useMemo<FormApi<T>>(
     () => ({
       reset,
       updateFieldsState,
@@ -213,11 +250,16 @@ const Form = <T, G extends StandardSchemaV1>({
       isSubmitting,
       setFieldValue,
       didSubmitOnce,
+      hasSomeError,
+      checkForErrors,
+      setDidSubmitOnce,
     }),
     [
+      checkForErrors,
       didSubmitOnce,
       fieldsInfo,
       fieldsState,
+      hasSomeError,
       isSubmitting,
       onFormSubmit,
       reset,
@@ -236,7 +278,12 @@ const Form = <T, G extends StandardSchemaV1>({
           : loaderFallback;
       }
 
-      return <div>...</div>;
+      // prevent error if it's react native
+      if (typeof window === "undefined") {
+        return null;
+      }
+
+      return <>...</>;
     },
     [loaderFallback]
   );
