@@ -66,6 +66,7 @@ You can also include additional components inside the form — such as a submit 
 - **`children`**: A function that receives the current form state and allows you to render additional components or information based on the form's state.
 - **`initialDisabledFields`**: An array of field names that should be disabled when the form is first rendered. This allows you to control which fields are editable at the start.
 - **`loaderFallback`**: A fallback component to display while the fields are being loaded.
+- **`forceFieldChangeState`**: An object that forces a rerender of the fields with the given state. This is useful for controlled components outside the form's context.
 
 ### Form API Methods
 
@@ -91,6 +92,8 @@ You can also include additional components inside the form — such as a submit 
 | **`setFieldsInfo(fieldsInfo)`**         | Updates metadata for all fields at once.                                                                                            |
 | **`updateFieldsState(fieldsState)`**    | Updates the state of multiple fields. Recommended for batch updates (e.g., value, touched, error, etc.).                            |
 | **`setFieldsState(fieldsState)`**       | Directly sets the full state of all fields. Not recommended — prefer `setFieldValue` or `updateFieldsState`.                        |
+| **`checkForErrors()`**                  | A function that manually triggers form validation.                                                                                  |
+| **`hasSomeError`**                      | A boolean indicating if there are any validation errors in the form.                                                                |
 
 ### Loader Fallback
 
