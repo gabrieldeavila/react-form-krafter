@@ -11,6 +11,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useImperativeHandle,
   useMemo,
   useRef,
   useState,
@@ -78,14 +79,49 @@ const List = <T, G extends StandardSchemaV1>({
     );
   }, []);
 
+  const insertItems = useCallback((newItems: T[]) => {
+    console.log("Inserting items:", newItems);
+    setItems((prevItems) => [...prevItems, ...newItems]);
+  }, []);
+
+  const removeItems = useCallback((indices: number[]) => {
+    setItems((prevItems) => prevItems.filter((_, i) => !indices.includes(i)));
+  }, []);
+
+  const updateItems = useCallback(
+    (updates: Array<{ index: number; item: T }>) => {
+      setItems((prevItems) => {
+        const newItems = [...prevItems];
+        updates.forEach(({ index, item }) => {
+          if (newItems[index]) {
+            newItems[index] = item;
+          }
+        });
+        return newItems;
+      });
+    },
+    []
+  );
+
   const listApiValue = useMemo<ListApi<T>>(
     () => ({
       items,
       addItem,
       removeItem,
       updateItem,
+      insertItems,
+      removeItems,
+      updateItems,
     }),
-    [items, addItem, removeItem, updateItem]
+    [
+      items,
+      addItem,
+      removeItem,
+      updateItem,
+      insertItems,
+      removeItems,
+      updateItems,
+    ]
   );
 
   const fieldsFormProps = useMemo<Field[]>(
@@ -98,6 +134,28 @@ const List = <T, G extends StandardSchemaV1>({
         },
       })),
     [userProps.fields]
+  );
+
+  useImperativeHandle(
+    userProps.listApi,
+    () => ({
+      addItem,
+      removeItem,
+      updateItem,
+      items,
+      insertItems,
+      removeItems,
+      updateItems,
+    }),
+    [
+      addItem,
+      removeItem,
+      updateItem,
+      items,
+      insertItems,
+      removeItems,
+      updateItems,
+    ]
   );
 
   const fieldsAddRow = useMemo<Field[]>(

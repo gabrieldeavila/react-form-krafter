@@ -5,6 +5,7 @@ const ExampleV0BasicAsync = lazy(() => import("./basic_async"));
 const ExampleV0Basic = lazy(() => import("./basic"));
 const ExampleV0Select = lazy(() => import("./select"));
 const ExampleV0List = lazy(() => import("./list"));
+const ExampleV0ListMultiple = lazy(() => import("./list-multiple"));
 
 const OPTIONS = {
   basic: {
@@ -22,6 +23,10 @@ const OPTIONS = {
   list: {
     title: "List Fields",
     component: ExampleV0List,
+  },
+  "list-multiple": {
+    title: "List Multiple Fields",
+    component: ExampleV0ListMultiple,
   },
 };
 

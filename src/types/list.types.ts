@@ -9,10 +9,13 @@ import type {
 } from "./form.types";
 
 export type ListApi<T> = {
-  addItem: () => void;
+  addItem: () => Promise<void>;
   removeItem: (index: number) => void;
   updateItem: (index: number, item: T) => void;
   items: T[];
+  insertItems: (items: T[]) => void;
+  removeItems: (indices: number[]) => void;
+  updateItems: (updates: Array<{ index: number; item: T }>) => void;
 };
 
 export type ListAddRowComponentProps<T> = {
