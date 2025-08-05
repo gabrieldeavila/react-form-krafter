@@ -166,6 +166,29 @@ The `listApi` ref provides access to the following methods and properties:
 | **`removeItem(index)`** | Removes the item at the specified index from the list. |
 | **`updateItem(index, item)`** | Updates the item at the specified index with new data. |
 
+## Bulk List API Methods & Types
+
+In addition to single-item operations, the List API provides methods for bulk insert, remove, and update. Here are their types:
+
+### `insertItems`
+```ts
+insertItems: (newItems: T[]) => void;
+```
+*Inserts an array of items (`T[]`) into the list.*
+
+### `removeItems`
+```ts
+removeItems: (indices: number[]) => void;
+```
+*Removes items at the specified array of indices (`number[]`).*
+
+### `updateItems`
+```ts
+updateItems: (updates: Array<{ index: number; item: T }>) => void;
+```
+*Updates items at the given indices with new values. Each update is an object with an `index` and the new `item` of type `T`.*
+
+These methods are available on the List API and can be accessed via the `useListApi` hook or through the imperative handle passed to the List component.
 You can also use a render prop `children` to get access to the `listApi`:
 
 ```jsx
