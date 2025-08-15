@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
+import { standardValidate } from "@lib/validation/standard";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import {
-  Suspense,
   useCallback,
   useContext,
   useEffect,
@@ -10,27 +10,25 @@ import {
   useState,
 } from "react";
 import {
-  type FormApi,
-  type Field,
   type FieldsInfo,
+  type FormApi,
   type FormContext,
   type FormUserConfigProps,
   type FormUserProps,
-} from "../types";
+} from "@lib/types";
 import FieldComp from "./field";
 import {
   FieldsInfoContext,
   FieldsStateContext,
   FormContextCreate,
 } from "./internal";
-import { standardValidate } from "@lib/validation/standard";
 
 const Form = <T, G extends StandardSchemaV1>({
   formApi,
   formClassName,
   initialDisabledFields,
-  loaderFallback,
   forceFieldChangeState,
+  fieldWrapper,
   ...props
 }: FormUserConfigProps<T> & FormUserProps<T, G>) => {
   const initialState: T = useMemo(
@@ -270,22 +268,21 @@ const Form = <T, G extends StandardSchemaV1>({
     ]
   );
 
-  const LoaderFallback = useCallback(
-    ({ field }: { field: Field }) => {
-      if (loaderFallback) {
-        return typeof loaderFallback === "function"
-          ? loaderFallback({ field })
-          : loaderFallback;
+  useEffect(() => {
+    if (didSubmitOnce) {
+      checkForErrors();
+    }
+  }, [fieldsState, didSubmitOnce, checkForErrors]);
+
+  const FieldWrapper = useCallback(
+    ({ children }: { children: React.ReactNode }) => {
+      if (fieldWrapper) {
+        return fieldWrapper(children);
       }
 
-      // prevent error if it's react native
-      if (typeof window === "undefined") {
-        return null;
-      }
-
-      return <>...</>;
+      return children;
     },
-    [loaderFallback]
+    [fieldWrapper]
   );
 
   useImperativeHandle(formApi, () => formApiValue, [formApiValue]);
@@ -314,12 +311,9 @@ const Form = <T, G extends StandardSchemaV1>({
           <form className={formClassName} onSubmit={onFormSubmit}>
             {props.fields?.map((field, index) => {
               return (
-                <Suspense
-                  key={index}
-                  fallback={<LoaderFallback field={field} />}
-                >
+                <FieldWrapper key={index}>
                   <FieldComp field={field} />
-                </Suspense>
+                </FieldWrapper>
               );
             })}
 
