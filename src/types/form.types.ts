@@ -65,7 +65,7 @@ export type FormUserConfigProps<T> = Partial<{
   forceFieldChangeState: T;
   initialDisabledFields: (keyof T)[];
   children: React.ReactNode | null | ((formApi: FormApi<T>) => React.ReactNode);
-  fieldWrapper?: (fieldComp: React.ReactNode) => React.ReactNode;
+  fieldWrapper?: (fieldComp: React.ReactNode, fieldProps: Field) => React.ReactNode;
 }>;
 
 export type FormContext<T, G extends StandardSchemaV1> = FormUserProps<T, G> & {

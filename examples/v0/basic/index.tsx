@@ -1,4 +1,4 @@
-import { lazy, useRef, type ComponentType } from "react";
+import { lazy, Suspense, useRef, type ComponentType } from "react";
 import { z } from "zod";
 import Form from "@lib/form/formContext";
 import Register from "@lib/register/registerContext";
@@ -50,6 +50,17 @@ function ExampleV0Basic() {
           schema={schema}
           formApi={formApi}
           fields={BASIC_FIELDS_EXAMPLE}
+          fieldWrapper={(fieldComp, fieldProps) => (
+            <Suspense
+              fallback={
+                <div className={fieldProps.wrapperClassName}>
+                  Loading {fieldProps.label}...
+                </div>
+              }
+            >
+              {fieldComp}
+            </Suspense>
+          )}
           onSubmit={async (values) => {
             if (values.success) {
               alert("Form submitted successfully!");

@@ -66,6 +66,21 @@ You can also include additional components inside the form — such as a submit 
 - **`children`**: A function that receives the current form state and allows you to render additional components or information based on the form's state.
 - **`initialDisabledFields`**: An array of field names that should be disabled when the form is first rendered. This allows you to control which fields are editable at the start.
 - **`loaderFallback`**: A fallback component to display while the fields are being loaded.
+- **`fieldWrapper`**: A function that wraps each field component. This is useful for adding custom wrappers or async loading states. For example, you can use React's `Suspense` to show a loading indicator while a field component is being loaded asynchronously:
+
+  ```tsx
+  fieldWrapper={(fieldComp, fieldProps) => (
+    <Suspense
+      fallback={
+        <div className={fieldProps.wrapperClassName}>
+          Loading {fieldProps.label}...
+        </div>
+      }
+    >
+      {fieldComp}
+    </Suspense>
+  )}
+  ```
 - **`forceFieldChangeState`**: An object that forces a rerender of the fields with the given state. This is useful for controlled components outside the form's context.
 
 ### Form API Methods

@@ -10,6 +10,7 @@ import {
   useState,
 } from "react";
 import {
+  type Field,
   type FieldsInfo,
   type FormApi,
   type FormContext,
@@ -275,9 +276,9 @@ const Form = <T, G extends StandardSchemaV1>({
   }, [fieldsState, didSubmitOnce, checkForErrors]);
 
   const FieldWrapper = useCallback(
-    ({ children }: { children: React.ReactNode }) => {
+    ({ children, field }: { children: React.ReactNode, field: Field }) => {
       if (fieldWrapper) {
-        return fieldWrapper(children);
+        return fieldWrapper(children, field);
       }
 
       return children;
@@ -311,7 +312,7 @@ const Form = <T, G extends StandardSchemaV1>({
           <form className={formClassName} onSubmit={onFormSubmit}>
             {props.fields?.map((field, index) => {
               return (
-                <FieldWrapper key={index}>
+                <FieldWrapper key={index} field={field}>
                   <FieldComp field={field} />
                 </FieldWrapper>
               );

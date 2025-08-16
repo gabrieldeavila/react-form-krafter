@@ -1,7 +1,7 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import type {
   FormApi,
-  FormFallbackProps,
+  FormUserConfigProps,
   FormUserProps,
   onChangeProps,
   OnUpdate,
@@ -69,10 +69,8 @@ export type ListUserConfigProps<T> = Partial<{
   initialDisabledFields?: (keyof T)[];
   children: React.ReactNode | null | ((listApi: ListApi<T>) => React.ReactNode);
   formProps: Partial<{
-    loaderFallback:
-      | React.ReactNode
-      | ((field: FormFallbackProps) => React.ReactNode);
     formClassName: string;
+    fieldWrapper: FormUserConfigProps<T>["fieldWrapper"];
   }>;
 }>;
 

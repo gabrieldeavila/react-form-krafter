@@ -121,6 +121,7 @@ function ExampleV0List() {
 export default ExampleV0List;
 ```
 
+
 ## Base Properties
 
 - **`fields`**: An array of registered fields to be rendered for each item in the list.
@@ -129,6 +130,21 @@ export default ExampleV0List;
 - **`initialItems`**: An array of initial items to populate the list.
 - **`formProps`**: Props to be passed to the underlying `Form` components.
   - **`formClassName`**: A custom class name for the form elements.
+  - **`fieldWrapper`**: A function that wraps each field component. This is useful for adding custom wrappers or async loading states. For example, you can use React's `Suspense` to show a loading indicator while a field component is being loaded asynchronously:
+
+    ```tsx
+    fieldWrapper={(fieldComp, fieldProps) => (
+      <Suspense
+        fallback={
+          <div className={fieldProps.wrapperClassName}>
+            Loading {fieldProps.label}...
+          </div>
+        }
+      >
+        {fieldComp}
+      </Suspense>
+    )}
+    ```
 - **`children`**: A function that receives the `listApi` and allows you to render additional components.
 
 ## `addProps`

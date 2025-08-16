@@ -7,7 +7,7 @@ import type {
   RegisterComponent,
   RegisterFieldRenderProps,
 } from "@lib/types";
-import { lazy, useCallback, useRef, type ComponentType } from "react";
+import { lazy, Suspense, useCallback, useRef, type ComponentType } from "react";
 import { z } from "zod";
 import { BASIC_FIELDS_EXAMPLE } from "./fields";
 
@@ -84,7 +84,15 @@ function ExampleV0ListMultiple() {
 
   const handleUpdate = () => {
     listApi.current?.updateItems([
-      { index: 1, item: { name: "Updated", surname: "Jane", age: 26, about: "Updated info" } },
+      {
+        index: 1,
+        item: {
+          name: "Updated",
+          surname: "Jane",
+          age: 26,
+          about: "Updated info",
+        },
+      },
     ]);
   };
 
@@ -101,6 +109,18 @@ function ExampleV0ListMultiple() {
           initialItems={initialItems}
           itemsProps={{
             rowComponent: itemRowComponent,
+          }}
+          formProps={{
+            formClassName: "list-form",
+            fieldWrapper: (fieldComp, fieldProps) => (
+              <Suspense
+                fallback={
+                  <div className={fieldProps.wrapperClassName}>Loading...</div>
+                }
+              >
+                {fieldComp}
+              </Suspense>
+            ),
           }}
           addProps={{
             rowComponent: addRowComponent,

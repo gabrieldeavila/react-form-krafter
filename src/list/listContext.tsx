@@ -80,7 +80,6 @@ const List = <T, G extends StandardSchemaV1>({
   }, []);
 
   const insertItems = useCallback((newItems: T[]) => {
-    console.log("Inserting items:", newItems);
     setItems((prevItems) => [...prevItems, ...newItems]);
   }, []);
 
@@ -185,6 +184,7 @@ const List = <T, G extends StandardSchemaV1>({
               forceFieldChangeState={rowAddState}
               formApi={addRowApi}
               fields={fieldsAddRow}
+              fieldWrapper={userProps.formProps?.fieldWrapper}
               schema={userProps.schema}
               formClassName={userProps.formProps?.formClassName}
               onChange={({ currentState, value, fieldName }) => {
