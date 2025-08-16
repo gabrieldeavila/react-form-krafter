@@ -1,10 +1,10 @@
 {
   "name": "react-form-krafter",
   "private": false,
-  "version": "0.0.59",
+  "version": "0.0.62",
   "type": "module",
   "description": "A flexible form engine for React powered by Standard Schema",
-  "types": "dist/types/index.d.ts",
+  "types": "dist/index.d.ts",
   "module": "dist/react-form-krafter.es.js",
   "main": "dist/react-form-krafter.cjs",
   "repository": {
@@ -31,7 +31,7 @@
     "dev": "vite",
     "dev:example": "vite ./examples/v0 --config vite.config.ts",
     "build:types": "tsc -p tsconfig.build.json",
-    "build": "vite build && pnpm build:types",
+    "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
