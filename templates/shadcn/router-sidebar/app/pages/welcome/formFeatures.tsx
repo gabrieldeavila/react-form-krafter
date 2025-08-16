@@ -1,4 +1,4 @@
-import { memo, useCallback, useRef } from "react";
+import { memo, Suspense, useCallback, useRef } from "react";
 import {
   Form,
   List,
@@ -156,20 +156,23 @@ function FormFeatures() {
   return (
     <KrafterRegister>
       <h1 className="text-2xl font-bold mb-4">Form Features Example</h1>
-    
+
       <Form<Validator, Schema>
         formClassName={cn(
           "grid gap-4",
           "grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
         )}
-        loaderFallback={
-          <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-            <Skeleton className="h-12 rounded-md" />
-            <Skeleton className="h-12 rounded-md" />
-            <Skeleton className="h-12 rounded-md" />
-            <Skeleton className="h-12 rounded-md" />
-          </div>
-        }
+        fieldWrapper={(fieldComp, fieldProps) => (
+          <Suspense
+            fallback={
+              <div className={fieldProps.wrapperClassName}>
+                <Skeleton className="h-12 rounded-md" />
+              </div>
+            }
+          >
+            {fieldComp}
+          </Suspense>
+        )}
         fields={fields}
         schema={schema}
         onSubmit={onSubmit}
