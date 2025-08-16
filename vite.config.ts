@@ -1,12 +1,10 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
+import dts from "vite-plugin-dts";
 
-// https://vite.dev/config/
-export default defineConfig({
-  plugins: [
-    react(),
-  ],
+export default defineConfig(({ mode }) => ({
+  plugins: [react(), dts()],
   resolve: {
     alias: {
       "@lib": path.resolve(__dirname, "./src"),
@@ -18,10 +16,12 @@ export default defineConfig({
     lib: {
       entry: path.resolve(__dirname, "src/index.ts"),
       name: "ReactFormKrafter",
-      fileName: (format) => `react-form-krafter.${format}.js`,
+      formats: ["es", "cjs"],
+      fileName: (format) => (format === "cjs" ? "react-form-krafter.cjs" : "react-form-krafter.es.js"),
     },
     rollupOptions: {
-      external: ["react", "react-dom", "@standard-schema/spec"],
+      // Fully externalize React and related runtime
+      external: [/^react($|\/)/, /^react-dom($|\/)/, "@standard-schema/spec"],
       output: {
         globals: {
           react: "React",
@@ -31,4 +31,7 @@ export default defineConfig({
       },
     },
   },
-});
+  define: {
+    __DEV__: mode !== "production", // strip dev warnings in production
+  },
+}));

@@ -1,12 +1,12 @@
 {
   "name": "react-form-krafter",
   "private": false,
-  "version": "0.0.53",
+  "version": "0.0.57",
   "type": "module",
   "description": "A flexible form engine for React powered by Standard Schema",
   "types": "dist/types/index.d.ts",
   "module": "dist/react-form-krafter.es.js",
-  "main": "dist/react-form-krafter.umd.js",
+  "main": "dist/react-form-krafter.cjs",
   "repository": {
     "type": "git",
     "url": "https://github.com/gabrieldeavila/react-form-krafter"
