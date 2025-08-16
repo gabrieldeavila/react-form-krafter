@@ -1,4 +1,4 @@
-import { memo, useCallback } from "react";
+import { memo, Suspense, useCallback } from "react";
 import {
   Form,
   useFieldsErrors,
@@ -104,14 +104,17 @@ function FormFeatures() {
           "grid gap-4",
           "grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
         )}
-        loaderFallback={
-          <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-            <Skeleton className="h-12 rounded-md" />
-            <Skeleton className="h-12 rounded-md" />
-            <Skeleton className="h-12 rounded-md" />
-            <Skeleton className="h-12 rounded-md" />
-          </div>
-        }
+        fieldWrapper={(fieldComp, fieldProps) => (
+          <Suspense
+            fallback={
+              <div className={fieldProps.wrapperClassName}>
+                <Skeleton className="h-12 rounded-md" />
+              </div>
+            }
+          >
+            {fieldComp}
+          </Suspense>
+        )}
         fields={fields}
         schema={schema}
         onSubmit={onSubmit}

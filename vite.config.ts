@@ -4,12 +4,26 @@ import path from "path";
 import dts from "vite-plugin-dts";
 
 export default defineConfig(({ mode }) => ({
-  plugins: [react(), dts()],
+  plugins: [
+    react(),
+    dts({
+      tsconfigPath: "./tsconfig.build.json",
+      entryRoot: "src", // must match baseUrl
+      pathsToAliases: true,
+      compilerOptions: {
+        paths: {
+          "@lib/*": ["./*"]
+        }
+      },
+      insertTypesEntry: true,
+    }),
+  ],
   resolve: {
     alias: {
       "@lib": path.resolve(__dirname, "./src"),
     },
   },
+
   build: {
     outDir: "dist",
     emptyOutDir: true,
@@ -17,7 +31,10 @@ export default defineConfig(({ mode }) => ({
       entry: path.resolve(__dirname, "src/index.ts"),
       name: "ReactFormKrafter",
       formats: ["es", "cjs"],
-      fileName: (format) => (format === "cjs" ? "react-form-krafter.cjs" : "react-form-krafter.es.js"),
+      fileName: (format) =>
+        format === "cjs"
+          ? "react-form-krafter.cjs"
+          : "react-form-krafter.es.js",
     },
     rollupOptions: {
       // Fully externalize React and related runtime

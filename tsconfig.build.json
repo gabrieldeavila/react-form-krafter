@@ -1,16 +1,22 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "bundler", // critical for ESM resolution
     "jsx": "react-jsx",
     "declaration": true,
+    "noImplicitAny": false,
+
     "emitDeclarationOnly": true,
     "declarationDir": "dist/types",
-    "noEmit": false,
     "outDir": "dist",
-    "composite": false,
+    "baseUrl": "src", // so @lib/* works
     "paths": {
-      "@lib/*": ["./src/*"]
-    }
+      "@lib/*": ["./*"]
+    },
+    "strict": true,
+    "esModuleInterop": true
   },
-  "include": ["src"]
+  "include": ["src/**/*.ts", "src/**/*.tsx"]
 }
