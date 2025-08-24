@@ -49,19 +49,6 @@ function FieldComponent({ field }: { field: Field }) {
         );
 
         if (validationResult instanceof Array) {
-          const prevError = currentFieldsInfo.errors[field.name];
-          const isManualError = currentFieldsInfo.manualErrors.includes(
-            field.name
-          );
-
-          if (
-            isManualError &&
-            prevError &&
-            prevError !== "REQUIRED_FIELD_ERROR"
-          ) {
-            return;
-          }
-
           const issues = validationResult.reduce(
             (acc, issue) => {
               const name = issue.path.join(".");
@@ -76,7 +63,10 @@ function FieldComponent({ field }: { field: Field }) {
 
               return acc;
             },
-            { ...currentFieldsInfo.errors, [field.name]: null }
+            {
+              ...currentFieldsInfo.errors,
+              [field.name]: null,
+            }
           );
 
           setFieldsInfo((prevInfo) => ({
@@ -86,7 +76,7 @@ function FieldComponent({ field }: { field: Field }) {
         } else if (validationResult === true) {
           setFieldsInfo((prevInfo) => ({
             ...prevInfo,
-            errors: {} as Record<keyof Record<string, unknown>, string>,
+            errors: {},
           }));
         }
       }
@@ -301,8 +291,12 @@ function FieldComponent({ field }: { field: Field }) {
   );
 
   const error = useMemo(() => {
-    return fieldsInfo.errors?.[field.name] || null;
-  }, [fieldsInfo.errors, field.name]);
+    return (
+      fieldsInfo.manualErrors?.[field.name] ||
+      fieldsInfo.errors?.[field.name] ||
+      null
+    );
+  }, [fieldsInfo.errors, fieldsInfo.manualErrors, field.name]);
 
   const fieldData = useMemo<RegisterField<unknown>>(
     () => ({

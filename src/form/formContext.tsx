@@ -55,7 +55,7 @@ const Form = <T, G extends StandardSchemaV1>({
     focused: [],
     touched: [],
     blurred: [],
-    manualErrors: [],
+    manualErrors: {} as Record<keyof T, string>,
     initialState,
     errors: {} as Record<keyof T, string>,
     disabled: initialDisabledFields ?? ([] as (keyof T)[]),
@@ -66,8 +66,11 @@ const Form = <T, G extends StandardSchemaV1>({
     () =>
       Object.keys(fieldsInfo.errors).some(
         (key) => fieldsInfo.errors[key as keyof T] != null
+      ) ||
+      Object.keys(fieldsInfo.manualErrors).some(
+        (key) => fieldsInfo.manualErrors[key as keyof T] != null
       ),
-    [fieldsInfo.errors]
+    [fieldsInfo.errors, fieldsInfo.manualErrors]
   );
 
   // #TODO: we could create a wrapper and only change the key - it would reset and scale better
@@ -81,7 +84,7 @@ const Form = <T, G extends StandardSchemaV1>({
       touched: [],
       blurred: [],
       errors: {} as Record<keyof T, string>,
-      manualErrors: [],
+      manualErrors: {} as Record<keyof T, string>,
       disabled: [],
       initialState: fieldsInfo.initialState,
     }));
@@ -135,23 +138,17 @@ const Form = <T, G extends StandardSchemaV1>({
   const setError = useCallback(
     (fieldName: keyof T, error: string | null) => {
       setFieldsInfo((prevInfo) => {
-        const errors = { ...prevInfo.errors };
+        const manualErrors = { ...prevInfo.manualErrors };
 
         if (error === null) {
-          prevInfo.manualErrors = prevInfo.manualErrors.filter(
-            (name) => name !== (fieldName as string)
-          );
-          delete errors[fieldName];
+          delete manualErrors[fieldName];
         } else {
-          if (!prevInfo.manualErrors.includes(fieldName as string)) {
-            prevInfo.manualErrors.push(fieldName as string);
-          }
-          errors[fieldName] = error;
+          manualErrors[fieldName] = error;
         }
 
         return {
           ...prevInfo,
-          errors,
+          manualErrors,
         };
       });
     },
@@ -167,21 +164,17 @@ const Form = <T, G extends StandardSchemaV1>({
         setDidSubmitOnce(true);
 
         if (props.onSubmit) {
-          const someError = Object.keys(fieldsInfo.errors).some(
-            (key) => fieldsInfo.errors[key as keyof T] != null
-          );
-
           await props.onSubmit({
             state: fieldsState,
             errors: fieldsInfo.errors,
-            success: !someError,
+            success: !hasSomeError,
           });
         }
       } finally {
         setIsSubmitting(false);
       }
     },
-    [props, fieldsState, fieldsInfo.errors]
+    [props, fieldsState, fieldsInfo.errors, hasSomeError]
   );
 
   const setFieldValue = useCallback(
@@ -284,7 +277,7 @@ const Form = <T, G extends StandardSchemaV1>({
   }, [fieldsState, didSubmitOnce, checkForErrors]);
 
   const FieldWrapper = useCallback(
-    ({ children, field }: { children: React.ReactNode, field: Field }) => {
+    ({ children, field }: { children: React.ReactNode; field: Field }) => {
       if (fieldWrapper) {
         return fieldWrapper(children, field);
       }
