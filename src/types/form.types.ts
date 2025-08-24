@@ -93,6 +93,7 @@ export type FieldMethods = {
 export type FieldsInfo<T> = {
   touched: string[];
   focused: string[];
+  manualErrors: string[];
   dirty: string[];
   blurred: string[];
   errors: Record<keyof T, string>;

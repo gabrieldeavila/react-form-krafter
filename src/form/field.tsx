@@ -49,6 +49,19 @@ function FieldComponent({ field }: { field: Field }) {
         );
 
         if (validationResult instanceof Array) {
+          const prevError = currentFieldsInfo.errors[field.name];
+          const isManualError = currentFieldsInfo.manualErrors.includes(
+            field.name
+          );
+
+          if (
+            isManualError &&
+            prevError &&
+            prevError !== "REQUIRED_FIELD_ERROR"
+          ) {
+            return;
+          }
+
           const issues = validationResult.reduce(
             (acc, issue) => {
               const name = issue.path.join(".");

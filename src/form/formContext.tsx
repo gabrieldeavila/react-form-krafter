@@ -55,6 +55,7 @@ const Form = <T, G extends StandardSchemaV1>({
     focused: [],
     touched: [],
     blurred: [],
+    manualErrors: [],
     initialState,
     errors: {} as Record<keyof T, string>,
     disabled: initialDisabledFields ?? ([] as (keyof T)[]),
@@ -80,6 +81,7 @@ const Form = <T, G extends StandardSchemaV1>({
       touched: [],
       blurred: [],
       errors: {} as Record<keyof T, string>,
+      manualErrors: [],
       disabled: [],
       initialState: fieldsInfo.initialState,
     }));
@@ -136,8 +138,14 @@ const Form = <T, G extends StandardSchemaV1>({
         const errors = { ...prevInfo.errors };
 
         if (error === null) {
+          prevInfo.manualErrors = prevInfo.manualErrors.filter(
+            (name) => name !== (fieldName as string)
+          );
           delete errors[fieldName];
         } else {
+          if (!prevInfo.manualErrors.includes(fieldName as string)) {
+            prevInfo.manualErrors.push(fieldName as string);
+          }
           errors[fieldName] = error;
         }
 
