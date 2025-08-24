@@ -81,6 +81,7 @@ You can also include additional components inside the form — such as a submit 
     </Suspense>
   )}
   ```
+
 - **`forceFieldChangeState`**: An object that forces a rerender of the fields with the given state. This is useful for controlled components outside the form's context.
 
 ### Form API Methods
@@ -104,11 +105,35 @@ You can also include additional components inside the form — such as a submit 
 | &nbsp;&nbsp;&nbsp;&nbsp;`disabled`      | Array of field names currently disabled.                                                                                            |
 | &nbsp;&nbsp;&nbsp;&nbsp;`previousState` | Object containing the previous values of all fields.                                                                                |
 | &nbsp;&nbsp;&nbsp;&nbsp;`initialState`  | Object containing the initial values of all fields (used when resetting).                                                           |
+| &nbsp;&nbsp;&nbsp;&nbsp;`manualErrors`  | Similar to `errors`, but only includes errors that were manually set (e.g., via `setError`).                                        |
 | **`setFieldsInfo(fieldsInfo)`**         | Updates metadata for all fields at once.                                                                                            |
 | **`updateFieldsState(fieldsState)`**    | Updates the state of multiple fields. Recommended for batch updates (e.g., value, touched, error, etc.).                            |
 | **`setFieldsState(fieldsState)`**       | Directly sets the full state of all fields. Not recommended — prefer `setFieldValue` or `updateFieldsState`.                        |
 | **`checkForErrors()`**                  | A function that manually triggers form validation.                                                                                  |
 | **`hasSomeError`**                      | A boolean indicating if there are any validation errors in the form.                                                                |
+
+### formApi
+
+The `formApi` prop is a ref that provides access to the Form API methods and properties.
+To use it, create a ref using `useRef` and pass it to the `formApi` prop.
+
+```jsx title="src/components/fields/FieldBase.jsx"
+const formApi = useRef(null);
+return (
+  <div className="example-wrapper">
+    <Register components={COMPONENTS}>
+      <Form
+        formClassName="fields"
+        schema={schema}
+        formApi={formApi}
+        fields={BASIC_FIELDS_EXAMPLE}
+      >
+        <button type="submit">Submit</button>
+      </Form>
+    </Register>
+  </div>
+);
+```
 
 ### Loader Fallback
 
