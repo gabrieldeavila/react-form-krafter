@@ -186,6 +186,11 @@ function FieldComponent({ field }: { field: Field }) {
             : [...(prevInfo.dirty || []), field.name],
         }));
 
+        setFieldsState((prevState: Record<string, unknown>) => ({
+          ...prevState,
+          [field.name]: value,
+        }));
+
         const currentFieldsInfo: FieldsInfo<Record<string, unknown>> =
           await new Promise((resolve) => {
             setFieldsInfo((prevInfo: FieldsInfo<Record<string, unknown>>) => {
@@ -202,11 +207,6 @@ function FieldComponent({ field }: { field: Field }) {
             });
           }
         );
-
-        setFieldsState((prevState: Record<string, unknown>) => ({
-          ...prevState,
-          [field.name]: value,
-        }));
 
         onChange?.({
           fieldName: field.name,

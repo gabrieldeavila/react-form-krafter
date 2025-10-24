@@ -14,13 +14,19 @@ export type FormApi<T> = {
   setError: (fieldName: keyof T, error: string | null) => void;
   setFieldValue: (fieldName: keyof T, value: T[keyof T]) => void;
   setDidSubmitOnce: React.Dispatch<React.SetStateAction<boolean>>;
-  checkForErrors: () => Promise<void>;
+  checkForErrors: () => Promise<onCheckForErrorsResult>;
+  requestSubmit: () => void;
+  formRef: React.RefObject<HTMLFormElement | null>;
   fieldsState: T;
   isSubmitting: boolean;
   didSubmitOnce: boolean;
   hasSomeError: boolean;
   fieldsInfo: FieldsInfo<T>;
   onFormSubmit: (e: React.FormEvent<HTMLFormElement>) => void | Promise<void>;
+};
+
+export type onCheckForErrorsResult = {
+  hasError: boolean;
 };
 
 export type onSubmitProps<T> = {
@@ -65,7 +71,10 @@ export type FormUserConfigProps<T> = Partial<{
   forceFieldChangeState: T;
   initialDisabledFields: (keyof T)[];
   children: React.ReactNode | null | ((formApi: FormApi<T>) => React.ReactNode);
-  fieldWrapper?: (fieldComp: React.ReactNode, fieldProps: Field) => React.ReactNode;
+  fieldWrapper?: (
+    fieldComp: React.ReactNode,
+    fieldProps: Field
+  ) => React.ReactNode;
 }>;
 
 export type FormContext<T, G extends StandardSchemaV1> = FormUserProps<T, G> & {

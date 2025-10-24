@@ -85,6 +85,10 @@ function ExampleV0Basic() {
           )}
         </Form>
       </Register>
+
+      <button onClick={() => formApi.current?.requestSubmit()}>
+        Request outside Submit
+      </button>
     </div>
   );
 }

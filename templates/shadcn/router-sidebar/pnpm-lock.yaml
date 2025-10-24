@@ -75,8 +75,8 @@ importers:
         specifier: ^19.1.0
         version: 19.1.0(react@19.1.0)
       react-form-krafter:
-        specifier: ^0.0.62
-        version: 0.0.62(@standard-schema/spec@1.0.0)(react@19.1.0)
+        specifier: ^0.0.68
+        version: 0.0.68(@standard-schema/spec@1.0.0)(react@19.1.0)
       react-router:
         specifier: ^7.7.1
         version: 7.7.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -114,6 +114,9 @@ importers:
       eslint-plugin-react-refresh:
         specifier: ^0.4.20
         version: 0.4.20(eslint@9.32.0(jiti@2.5.1))
+      globals:
+        specifier: ^16.2.0
+        version: 16.4.0
       tailwindcss:
         specifier: ^4.1.11
         version: 4.1.11
@@ -1754,6 +1757,10 @@ packages:
     resolution: {integrity: sha512-oahGvuMGQlPw/ivIYBjVSrWAfWLBeku5tpPE2fOPLi+WHffIWbuh2tCjhyQhTBPMf5E9jDEH4FOmTYgYwbKwtQ==}
     engines: {node: '>=18'}
 
+  globals@16.4.0:
+    resolution: {integrity: sha512-ob/2LcVVaVGCYN+r14cnwnoDPUufjiYgSqRhiFD0Q1iI4Odora5RE8Iv1D24hAz5oMophRGkGz+yuvQmmUMnMw==}
+    engines: {node: '>=18'}
+
   globrex@0.1.2:
     resolution: {integrity: sha512-uHJgbwAMwNFf5mLst7IWLNg14x1CkeqglJb/K3doi4dw6q2IvAAmM/Y81kevy83wP+Sst+nutFTYOGg3d1lsxg==}
 
@@ -2234,8 +2241,8 @@ packages:
     peerDependencies:
       react: ^19.1.0
 
-  react-form-krafter@0.0.62:
-    resolution: {integrity: sha512-yRi3tMYrhDjYqdshGhtMUginDPdPez++Pdh+hXzhtwFunrmD+qjiVPOAcg+tWV6ClJ1C8JRUl0eTlpUjd7NOtA==}
+  react-form-krafter@0.0.68:
+    resolution: {integrity: sha512-b4qAUxoJMpsx/n3KvrHoRtXnPco9mA2cPepah9mbO5i1KgY0UGj7fJUWmLBRPegvgdlJmUCDK59LGB7KKHfERg==}
     peerDependencies:
       '@standard-schema/spec': ^1.0.0
       react: ^16.8.0 || ^17 || ^18 || ^19
@@ -4354,6 +4361,8 @@ snapshots:
 
   globals@14.0.0: {}
 
+  globals@16.4.0: {}
+
   globrex@0.1.2: {}
 
   gopd@1.2.0: {}
@@ -4737,7 +4746,7 @@ snapshots:
       react: 19.1.0
       scheduler: 0.26.0
 
-  react-form-krafter@0.0.62(@standard-schema/spec@1.0.0)(react@19.1.0):
+  react-form-krafter@0.0.68(@standard-schema/spec@1.0.0)(react@19.1.0):
     dependencies:
       '@standard-schema/spec': 1.0.0
       react: 19.1.0

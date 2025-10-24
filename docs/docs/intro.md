@@ -191,7 +191,7 @@ const FirstForm = () => {
     <Form
       fields={BASIC_FIELDS_EXAMPLE}
       schema={schema}
-      ref={formApi}
+      formApi={formApi}
       onSubmit={async (values) => {
         if (values.success) {
           alert("Form submitted successfully!");
@@ -221,7 +221,7 @@ const FirstForm = () => {
 export default FirstForm;
 ```
 
-The formApi ref allows you to access methods like `reset()` and `submit()`, giving you control over the form's state and behavior.
+The `formApi` ref allows you to access methods like `reset()` and `requestSubmit()` (and other helpers described in the Form API table), giving you programmatic control over the form's state and behavior.
 
 Also, you are able to access the current state of the form through `formValue.fieldsState`, which provides insights into the values and validation status of each field.
 

@@ -7,6 +7,7 @@ import {
   useEffect,
   useImperativeHandle,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import {
@@ -32,6 +33,8 @@ const Form = <T, G extends StandardSchemaV1>({
   fieldWrapper,
   ...props
 }: FormUserConfigProps<T> & FormUserProps<T, G>) => {
+  const formRef = useRef<HTMLFormElement | null>(null);
+
   const initialState: T = useMemo(
     () =>
       Object.fromEntries(
@@ -155,11 +158,36 @@ const Form = <T, G extends StandardSchemaV1>({
     [setFieldsInfo]
   );
 
+  const checkForErrors = useCallback(async () => {
+    let hasError = false;
+    const validationResult = await standardValidate(props.schema, fieldsState);
+
+    if (validationResult instanceof Array) {
+      const issues = validationResult.reduce((acc, issue) => {
+        const name = issue.path.join(".");
+
+        acc[name] = issue.message;
+
+        return acc;
+      }, {});
+
+      setFieldsInfo((prevInfo) => ({
+        ...prevInfo,
+        errors: issues,
+      }));
+      hasError = true;
+    }
+
+    return { hasError };
+  }, [props.schema, fieldsState]);
+
   const onFormSubmit = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
       try {
         event.preventDefault();
         event.stopPropagation();
+        const { hasError } = await checkForErrors();
+
         setIsSubmitting(true);
         setDidSubmitOnce(true);
 
@@ -167,14 +195,14 @@ const Form = <T, G extends StandardSchemaV1>({
           await props.onSubmit({
             state: fieldsState,
             errors: fieldsInfo.errors,
-            success: !hasSomeError,
+            success: !hasError,
           });
         }
       } finally {
         setIsSubmitting(false);
       }
     },
-    [props, fieldsState, fieldsInfo.errors, hasSomeError]
+    [checkForErrors, props, fieldsState, fieldsInfo.errors]
   );
 
   const setFieldValue = useCallback(
@@ -192,24 +220,11 @@ const Form = <T, G extends StandardSchemaV1>({
     [setFieldsState]
   );
 
-  const checkForErrors = useCallback(async () => {
-    const validationResult = await standardValidate(props.schema, fieldsState);
-
-    if (validationResult instanceof Array) {
-      const issues = validationResult.reduce((acc, issue) => {
-        const name = issue.path.join(".");
-
-        acc[name] = issue.message;
-
-        return acc;
-      }, {});
-
-      setFieldsInfo((prevInfo) => ({
-        ...prevInfo,
-        errors: issues,
-      }));
+  const requestSubmit = useCallback(() => {
+    if (formRef.current) {
+      formRef.current.requestSubmit();
     }
-  }, [props.schema, fieldsState]);
+  }, []);
 
   const formValue = useMemo<FormContext<T, G>>(
     () => ({
@@ -246,6 +261,8 @@ const Form = <T, G extends StandardSchemaV1>({
       fieldsInfo,
       setDisabled,
       setError,
+      requestSubmit,
+      formRef,
       onFormSubmit,
       isSubmitting,
       setFieldValue,
@@ -262,6 +279,7 @@ const Form = <T, G extends StandardSchemaV1>({
       hasSomeError,
       isSubmitting,
       onFormSubmit,
+      requestSubmit,
       reset,
       setDisabled,
       setError,
@@ -269,12 +287,6 @@ const Form = <T, G extends StandardSchemaV1>({
       updateFieldsState,
     ]
   );
-
-  useEffect(() => {
-    if (didSubmitOnce) {
-      checkForErrors();
-    }
-  }, [fieldsState, didSubmitOnce, checkForErrors]);
 
   const FieldWrapper = useCallback(
     ({ children, field }: { children: React.ReactNode; field: Field }) => {
@@ -310,7 +322,7 @@ const Form = <T, G extends StandardSchemaV1>({
             >
           }
         >
-          <form className={formClassName} onSubmit={onFormSubmit}>
+          <form className={formClassName} onSubmit={onFormSubmit} ref={formRef}>
             {props.fields?.map((field, index) => {
               return (
                 <FieldWrapper key={index} field={field}>

@@ -86,31 +86,31 @@ You can also include additional components inside the form — such as a submit 
 
 ### Form API Methods
 
-| Name                                    | Description                                                                                                                         |
-| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| **`reset()`**                           | Resets the form to its initial state.                                                                                               |
-| **`onFormSubmit()`**                    | Programmatically submits the form. Useful for triggering submission from outside the form component.                                |
-| **`setFieldValue(name, value)`**        | Updates the value of a specific field by its name.                                                                                  |
-| **`setDisabled(name, disabled)`**       | Enables or disables a specific field by its name.                                                                                   |
-| **`setError(name, error)`**             | Sets an error message for a specific field by its name.                                                                             |
-| **`fieldsState`**                       | An object containing the current state of all fields (e.g., value, error, touched, etc.).                                           |
-| **`isSubmitting`**                      | Boolean indicating whether the form is currently being submitted.                                                                   |
-| **`didSubmitOnce`**                     | Boolean indicating whether the form has been submitted at least once. Useful for controlling UI behavior based on submission state. |
-| **`fieldsInfo`**                        | An object containing metadata about all fields. See subfields below:                                                                |
-| &nbsp;&nbsp;&nbsp;&nbsp;`touched`       | Array of field names that have been touched (focused and blurred).                                                                  |
-| &nbsp;&nbsp;&nbsp;&nbsp;`focused`       | Array of field names currently focused.                                                                                             |
-| &nbsp;&nbsp;&nbsp;&nbsp;`dirty`         | Array of field names that have been modified.                                                                                       |
-| &nbsp;&nbsp;&nbsp;&nbsp;`blurred`       | Array of field names that lost focus at least once.                                                                                 |
-| &nbsp;&nbsp;&nbsp;&nbsp;`error`         | Object mapping field names to their respective error messages.                                                                      |
-| &nbsp;&nbsp;&nbsp;&nbsp;`disabled`      | Array of field names currently disabled.                                                                                            |
-| &nbsp;&nbsp;&nbsp;&nbsp;`previousState` | Object containing the previous values of all fields.                                                                                |
-| &nbsp;&nbsp;&nbsp;&nbsp;`initialState`  | Object containing the initial values of all fields (used when resetting).                                                           |
-| &nbsp;&nbsp;&nbsp;&nbsp;`manualErrors`  | Similar to `errors`, but only includes errors that were manually set (e.g., via `setError`).                                        |
-| **`setFieldsInfo(fieldsInfo)`**         | Updates metadata for all fields at once.                                                                                            |
-| **`updateFieldsState(fieldsState)`**    | Updates the state of multiple fields. Recommended for batch updates (e.g., value, touched, error, etc.).                            |
-| **`setFieldsState(fieldsState)`**       | Directly sets the full state of all fields. Not recommended — prefer `setFieldValue` or `updateFieldsState`.                        |
-| **`checkForErrors()`**                  | A function that manually triggers form validation.                                                                                  |
-| **`hasSomeError`**                      | A boolean indicating if there are any validation errors in the form.                                                                |
+The form exposes a programmatic API via the `formApi` ref. Below are the methods and properties available on that API (see `src/types/form.types.ts` for types):
+
+| Name | Description |
+| ---- | ----------- |
+| `reset()` | Reset all fields to the form initial state. |
+| `updateFieldsState(newState)` | Merge `newState` into the current fields state (batch updates). |
+| `setFieldsState(state)` | Replace the full fields state (React setState signature). |
+| `setFieldsInfo(fieldsInfo)` | Replace the full fields info (React setState signature). |
+| `setDisabled(fieldName, disabled)` | Enable/disable a field programmatically. |
+| `setError(fieldName, error)` | Set or clear a manual error for a field. Pass `null` to clear. |
+| `setFieldValue(fieldName, value)` | Set a single field's value programmatically. |
+| `setDidSubmitOnce(value)` | Set the internal `didSubmitOnce` flag. |
+| `checkForErrors()` | Run validation against the form schema and update errors; returns `{ hasError: boolean }`. |
+| `requestSubmit()` | Programmatically trigger a submit on the internal form element. |
+| `formRef` | `RefObject<HTMLFormElement>` — the internal form element ref (useful for advanced integrations). |
+| `fieldsState` | Current form values object. |
+| `isSubmitting` | Boolean: form is currently submitting. |
+| `didSubmitOnce` | Boolean: form has been submitted at least once. |
+| `hasSomeError` | Boolean: any field currently reports an error (including manual errors). |
+| `fieldsInfo` | Full `FieldsInfo<T>` structure with `dirty`, `focused`, `touched`, `blurred`, `previousState`, `initialState`, `errors`, and `manualErrors`. |
+
+Notes:
+
+- `checkForErrors()` updates `fieldsInfo.errors` and `fieldsInfo.manualErrors` and returns an object `{ hasError }` describing whether any validation errors were found.
+- Prefer `setFieldValue` or `updateFieldsState` for typical updates; `setFieldsState` replaces the entire state and should be used with care.
 
 ### formApi
 
