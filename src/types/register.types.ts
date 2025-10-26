@@ -30,6 +30,7 @@ export type RegisterSettings = Partial<{
   labels: Partial<{
     required: string; // Label for required fields
   }>;
+  disableErrorCheckOnChange: boolean; // default is false
 }>;
 
 export type RegisterContext<T> = {

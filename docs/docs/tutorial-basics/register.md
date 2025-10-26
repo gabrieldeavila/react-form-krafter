@@ -39,5 +39,6 @@ return (
 The settings can include:
 
 - **`updateDebounce`**: Time in milliseconds to debounce field updates, if not set, it will update when the user blurs the field.
+- **`disableErrorCheckOnChange`**: If set to true, the form will not check for errors on field value changes, only on blur or form submission. Default is false.
 - **`labels`**: An object containing default labels for fields, which can be overridden by individual field configurations.
   - **`required`**: Error message displayed when a required field is not filled out.

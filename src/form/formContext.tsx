@@ -178,8 +178,14 @@ const Form = <T, G extends StandardSchemaV1>({
       hasError = true;
     }
 
+    if (!hasError) {
+      hasError = Object.keys(fieldsInfo.manualErrors).some(
+        (key) => fieldsInfo.manualErrors[key as keyof T] != null
+      );
+    }
+
     return { hasError };
-  }, [props.schema, fieldsState]);
+  }, [props.schema, fieldsState, fieldsInfo.manualErrors]);
 
   const onFormSubmit = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {

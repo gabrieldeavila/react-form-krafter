@@ -215,6 +215,10 @@ function FieldComponent({ field }: { field: Field }) {
           currentState: currentFieldsState,
         });
 
+        if (!settings?.disableErrorCheckOnChange) {
+          checkForErrors(currentFieldsState, currentFieldsInfo, field, value);
+        }
+
         if (settings?.updateDebounce) {
           if (timerRef.current) {
             clearTimeout(timerRef.current);
@@ -235,11 +239,13 @@ function FieldComponent({ field }: { field: Field }) {
       }
     },
     [
-      field.name,
+      checkForErrors,
+      field,
       handleFieldUpdate,
       onChange,
       setFieldsInfo,
       setFieldsState,
+      settings?.disableErrorCheckOnChange,
       settings?.updateDebounce,
     ]
   );
